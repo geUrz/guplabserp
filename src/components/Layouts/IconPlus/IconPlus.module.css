@@ -1,0 +1,33 @@
+.iconPlus{
+  margin-top: 30px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconPlus div{
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--bgBtnN);
+  cursor: pointer;
+}
+
+.iconPlus div:hover{
+  background-color: var(--bgBtnN1);
+}
+
+.iconPlus div:active{
+  background-color: var(--bgBtnN2);
+}
+
+.iconPlus svg, .iconPlus path{
+  font-size: 18px;
+  color: var(--bgBody) !important;
+  cursor: pointer;
+}

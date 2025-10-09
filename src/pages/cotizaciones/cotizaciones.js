@@ -1,12 +1,11 @@
+import styles from './cotizaciones.module.css'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect, useState } from 'react'
-import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
-import { FaSearch } from 'react-icons/fa'
+import { Add, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { CotizacionForm, CotizacionLista, CotizacionListSearch, SearchCotizacion } from '@/components/Cotizaciones'
 import axios from 'axios'
-import styles from './cotizaciones.module.css'
 
 export default function Cotizaciones() {
 
@@ -40,20 +39,12 @@ export default function Cotizaciones() {
   }, [reload])
 
   const [toastSuccess, setToastSuccess] = useState(false)
-  const [toastSuccessMod, setToastSuccessMod] = useState(false)
   const [toastSuccessDel, setToastSuccessDel] = useState(false)
 
   const onToastSuccess = () => {
     setToastSuccess(true)
     setTimeout(() => {
       setToastSuccess(false)
-    }, 3000)
-  }
-
-  const onToastSuccessMod = () => {
-    setToastSuccessMod(true)
-    setTimeout(() => {
-      setToastSuccessMod(false)
     }, 3000)
   }
 
@@ -72,41 +63,31 @@ export default function Cotizaciones() {
 
     <ProtectedRoute>
 
-      <BasicLayout title='Cotizaciones' relative onReload={onReload}>
+      <BasicLayout relative onReload={onReload}>
 
-        {toastSuccess && <ToastSuccess contain='Creada exitosamente' onClose={() => setToastSuccess(false)} />}
+        {toastSuccess && <ToastSuccess onClose={() => setToastSuccess(false)} />}
 
-        {toastSuccessMod && <ToastSuccess contain='Modificada exitosamente' onClose={() => setToastSuccessMod(false)} />}
-
-        {toastSuccessDel && <ToastDelete contain='Eliminada exitosamente' onClose={() => setToastSuccessDel(false)} />}
+        {toastSuccessDel && <ToastDelete onClose={() => setToastSuccessDel(false)} />}
 
         <Title title='cotizaciones' />
 
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchCotizacion onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <CotizacionListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
-
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar cotización</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
-
-        <CotizacionLista reload={reload} onReload={onReload} cotizaciones={cotizaciones} setCotizaciones={setCotizaciones} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
-
         <Add onOpenClose={onOpenCloseForm} />
+
+        <Search
+          title='cotización'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          user={user}
+          reload={reload}
+          onReload={onReload}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchCotizacion}
+          SearchListComponent={CotizacionListSearch}
+          onToastSuccess={onToastSuccess}
+        />
+
+        <CotizacionLista reload={reload} onReload={onReload} cotizaciones={cotizaciones} setCotizaciones={setCotizaciones} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 

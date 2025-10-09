@@ -1,0 +1,58 @@
+.main{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.searchInput{
+  width: 100% !important;
+  height: auto !important;
+}
+
+.input{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input input{
+  width: 280px !important;
+  color: var(--clrFont) !important;
+  border-radius: 5px !important;
+  background-color: var(--bgInput) !important;
+  border: none !important;
+}
+
+.input input:focus{
+  background-color: var(--bgInputFocus) !important;
+}
+
+.iconSearch{
+  position: relative;
+  cursor: pointer;
+} 
+
+.iconSearch svg, .iconSearch path{
+  margin: 8px 0 0 10px;
+  font-size: 28px;
+  color: var(--clrFont);
+  cursor: pointer;
+} 
+
+.visitaLista{
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 100%;
+  height: auto;
+}
+
+@media screen and (min-width: 768px) {
+
+
+
+}

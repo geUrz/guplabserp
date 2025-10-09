@@ -7,37 +7,28 @@ import { getValueOrDefault } from '@/helpers'
 import { BasicModal } from '@/layouts'
 import { ReciboDetalles } from '../ReciboDetalles'
 import styles from './RecibosLista.module.css'
+import { selectRecibo, selectRecibos } from '@/store/recibos/reciboSelectors'
+import { useDispatch, useSelector } from 'react-redux'
+import { setRecibo } from '@/store/recibos/reciboSlice'
 
 export function RecibosLista(props) {
 
-  const { reload, onReload, recibos, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { reload, onReload, onToastSuccess, onToastSuccessDel } = props
 
-  const [show, setShow] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
-  
-  const [reciboSeleccionado, setReciboSeleccionado] = useState(null)
-  const [toastSuccess, setToastSuccess] = useState(false)
-  const [toastSuccessConfirm, setToastSuccessConfirm] = useState(false)
-  const [toastSuccessDelete, setToastSuccessDelete] = useState(false)
+  const [showDetalles, setShowDetalles] = useState(false)
 
-  const onShowConfirm = () => setShowConfirm((prevState) => !prevState)
+  const dispatch = useDispatch()
+  const recibo = useSelector(selectRecibo)
+  const recibos = useSelector(selectRecibos)
 
-  const onOpenClose = async (recibo) => {
+  const onOpenDetalles = (recibo) => {
+    dispatch(setRecibo(recibo))
+    setShowDetalles(true)
+  }  
 
-    if (!recibo || !recibo.id) {
-      setShow(false)
-      return;
-    }
-
-    try {
-      const response = await axios.get(`/api/recibos/conceptos?recibo_id=${recibo.id}`)
-      recibo.conceptos = response.data
-      setReciboSeleccionado(recibo)
-      setShow((prevState) => !prevState)
-    } catch (error) {
-      console.error('Error al obtener los conceptos:', error)
-      setShow(false)
-    }
+  const onCloseDetalles = () => {
+    dispatch(setRecibo(null))
+    setShowDetalles(false)
   }
 
   const onDeleteConcept = async (conceptoId) => {
@@ -70,12 +61,6 @@ export function RecibosLista(props) {
 
     <>
 
-      {toastSuccess && <ToastSuccess contain='Concepto creado exitosamente' onClose={() => setToastSuccess(false)} />}
-
-      {toastSuccessConfirm && <ToastSuccess contain='Recibo eliminado exitosamente' onClose={() => setToastSuccessConfirm(false)} />}
-
-      {toastSuccessDelete && <ToastSuccess contain='Concepto eliminado exitosamente' onClose={() => setToastSuccessConfirm(false)} />}
-
       {!recibos ? (
         <Loading size={45} loading={1} />
       ) : (
@@ -106,8 +91,8 @@ export function RecibosLista(props) {
         )
       )}
 
-      <BasicModal title='detalles del recibo' show={show} onClose={onOpenClose}>
-        <ReciboDetalles recibo={reciboSeleccionado} reciboId={reciboSeleccionado} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onOpenClose={onOpenClose} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onDeleteConcept={onDeleteConcept} reciboSeleccionado={setReciboSeleccionado} />
+      <BasicModal title='detalles del recibo' show={showDetalles} onClose={onCloseDetalles}>
+        <ReciboDetalles reload={reload} onReload={onReload} onOpenClose={onOpenDetalles} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onDeleteConcept={onDeleteConcept} />
       </BasicModal>
 
     </>

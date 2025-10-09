@@ -1,10 +1,10 @@
-import { FaCheck } from 'react-icons/fa'
+import { FaCheckCircle } from 'react-icons/fa'
 import styles from './ToastSuccess.module.css'
 import { useEffect } from 'react';
 
 export function ToastSuccess(props) {
 
-  const {onClose, contain} = props
+  const { onClose } = props
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -18,8 +18,7 @@ export function ToastSuccess(props) {
 
     <div className={styles.section}>
       <div className={styles.toast}>
-        <FaCheck />
-        <h1>¡ {contain} !</h1>
+        <FaCheckCircle />
       </div>
     </div>
 

@@ -1,4 +1,4 @@
-import { IconClose } from '@/components/Layouts'
+import { DatosOb, IconClose } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
@@ -6,7 +6,9 @@ import styles from './ClienteEditForm.module.css'
 
 export function ClienteEditForm(props) {
 
-  const { reload, onReload, cliente, onOpenCloseEdit, onToastSuccessMod } = props
+  const { reload, onReload, cliente, onOpenCloseEdit, onToastSuccess } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [clientes, setClientes] = useState([])
 
@@ -26,8 +28,8 @@ export function ClienteEditForm(props) {
   const [formData, setFormData] = useState({
     nombre: cliente.nombre,
     contacto: cliente.contacto,
-    cel: cliente.cel,
     direccion: cliente.direccion,
+    cel: cliente.cel,
     email: cliente.email
   })
 
@@ -42,10 +44,6 @@ export function ClienteEditForm(props) {
 
     if (!formData.contacto) {
       newErrors.contacto = 'El campo es requerido'
-    }
-
-    if (!formData.cel) {
-      newErrors.cel = 'El campo es requerido'
     }
 
     setErrors(newErrors)
@@ -67,15 +65,19 @@ export function ClienteEditForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     try {
       await axios.put(`/api/clientes/clientes?id=${cliente.id}`, {
         ...formData
       })
       onReload()
       onOpenCloseEdit()
-      onToastSuccessMod()
+      onToastSuccess()
     } catch (error) {
       console.error('Error actualizando el cliente:', error)
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -89,7 +91,7 @@ export function ClienteEditForm(props) {
         <FormGroup widths='equal'>
           <FormField error={!!errors.nombre}>
             <Label>
-              Nombre
+              Cliente*
             </Label>
             <Input
               type="text"
@@ -101,7 +103,7 @@ export function ClienteEditForm(props) {
           </FormField>
           <FormField error={!!errors.contacto}>
             <Label>
-              Contacto
+              Contacto*
             </Label>
             <Input
               type="text"
@@ -111,18 +113,6 @@ export function ClienteEditForm(props) {
             />
             {errors.contacto && <Message negative>{errors.contacto}</Message>}
           </FormField>
-          <FormField error={!!errors.cel}>
-            <Label>
-              Celular
-            </Label>
-            <Input
-              type="text"
-              name="cel"
-              value={formData.cel}
-              onChange={handleChange}
-            />
-            {errors.cel && <Message negative>{errors.cel}</Message>}
-          </FormField>
           <FormField>
             <Label>
               Dirección
@@ -131,6 +121,17 @@ export function ClienteEditForm(props) {
               type="text"
               name="direccion"
               value={formData.direccion}
+              onChange={handleChange}
+            />
+          </FormField>
+          <FormField>
+            <Label>
+              Celular
+            </Label>
+            <Input
+              type="text"
+              name="cel"
+              value={formData.cel}
               onChange={handleChange}
             />
           </FormField>
@@ -146,9 +147,12 @@ export function ClienteEditForm(props) {
             />
           </FormField>
         </FormGroup>
-        <Button primary onClick={handleSubmit}>
+        <Button primary loading={isLoading} onClick={handleSubmit}>
           Guardar
         </Button>
+
+        <DatosOb />
+
       </Form>
 
     </>

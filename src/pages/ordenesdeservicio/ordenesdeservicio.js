@@ -1,6 +1,6 @@
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { BasicLayout, BasicModal } from '@/layouts'
-import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
+import { Add, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
@@ -82,36 +82,28 @@ export default function Ordenesdeservicio() {
 
         <Title title='órdenes de servicio' />
 
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchOrdenesdeservicio onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <OrdenesdeservicioListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
-
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar orden de servicio</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
-
-        <OrdenesdeservicioList reload={reload} onReload={onReload} ordservs={ordservs} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
-
         <Add onOpenClose={onOpenCloseForm} />
+        
+        <Search
+          title='orden de servicio'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          user={user}
+          reload={reload}
+          onReload={onReload}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchOrdenesdeservicio}
+          SearchListComponent={OrdenesdeservicioListSearch}
+          onToastSuccessMod={onToastSuccessMod}
+        />
+
+        <OrdenesdeservicioList user={user} reload={reload} onReload={onReload} ordservs={ordservs} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
       <BasicModal title='crear orden de servicio' show={openForm} onClose={onOpenCloseForm}>
-        <OrdenesdeservicioForm reload={reload} onReload={onReload} onOpenCloseForm={onOpenCloseForm} onToastSuccess={onToastSuccess} />
+        <OrdenesdeservicioForm user={user} reload={reload} onReload={onReload} onOpenCloseForm={onOpenCloseForm} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
     </ProtectedRoute>

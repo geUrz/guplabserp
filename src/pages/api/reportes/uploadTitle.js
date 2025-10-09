@@ -1,4 +1,4 @@
-import {connection} from "@/libs/db";
+import connection from "@/libs/db";
 
 export default async function handler(req, res) {
     const { id, titleKey, titleValue } = req.body

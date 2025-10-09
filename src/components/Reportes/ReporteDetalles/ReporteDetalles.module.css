@@ -19,13 +19,14 @@
   margin-top: 5px;
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clr1);
+  color: var(--clrGlobalN);
   white-space: pre-line;
 }
 
 .box1 h2{
   margin-top: 3px;
   font-size: 12.5px;
+  color: var(--clrGlobalB);
   white-space: pre-line;
 }
 
@@ -78,7 +79,7 @@
 .pagina h1{
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clrBL0000);
+  color: var(--clrGlobalB);
 }
 
 .toggleEvi{
@@ -93,7 +94,7 @@
 .toggleEvi h1{
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clrBL0000);
+  color: var(--clrGlobalB);
 }
 
 .toggleOFF, .toggleON{
@@ -109,7 +110,7 @@
 }
 
 .toggleON svg, .toggleON path{
-  color: var(--clr1);
+  color: var(--clrGlobalN);
   cursor: pointer;
 }
 
@@ -129,7 +130,7 @@
 }
 
 .mainTabPane{
-  background-color: var(--bg2) !important;
+  background-color: var(--bgSVGIMG) !important;
   border: none !important;
 }
 
@@ -138,7 +139,6 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg2);
 }
 
 .tabContent > div{
@@ -172,8 +172,12 @@
 
 .tabContent svg, .tabContent path{
   font-size: 60px;
-  color: var(--clrGR00);
+  color: var(--clrSVGIMG);
   cursor: pointer;
+}
+
+.tabContent h1{
+  color: var(--clrGlobalB);
 }
 
 .editTitle{
@@ -182,7 +186,7 @@
 
 .editTitle svg, .editTitle path{
   font-size: 20px;
-  color: var(--clrBL0000);
+  color: var(--clrGlobalN);
   cursor: pointer;
 }
 

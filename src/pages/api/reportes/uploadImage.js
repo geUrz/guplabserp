@@ -1,4 +1,4 @@
-import {connection} from '@/libs/db'
+import connection from '@/libs/db'
 import multer from 'multer'
 import fs from 'fs'
 import path from 'path'

@@ -1,0 +1,12 @@
+.toggleON svg, .toggleON path, .toggleOFF svg, .toggleOFF path{
+  margin: 0 5px;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.toggleON svg, .toggleON path{
+  color: var(--bgBtnN);
+}

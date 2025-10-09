@@ -10,7 +10,7 @@ import styles from './RecibosListSearch.module.css'
 
 export function RecibosListSearch(props) {
 
-  const { reload, onReload, recibos, onToastSuccessMod, onToastSuccessDel } = props
+  const { reload, onReload, recibos, onToastSuccess, onToastSuccessDel } = props
 
   const [show, setShow] = useState(false)
   const [reciboSeleccionado, setReciboSeleccionado] = useState(null)
@@ -77,7 +77,7 @@ export function RecibosListSearch(props) {
             recibo={reciboSeleccionado}
             reciboId={reciboSeleccionado}
             onOpenClose={onOpenClose}
-            onToastSuccessMod={onToastSuccessMod}
+            onToastSuccess={onToastSuccess}
             onToastSuccessDel={onToastSuccessDel}
           />
         )}

@@ -9,7 +9,6 @@
 }
 
 .section{
-  padding: 0 10px;
   width: 100%;
   max-width: 600px;
   height: auto;
@@ -26,17 +25,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg1);
+  background-color: var(--bgList0);
   border-radius: 5px;
   cursor: pointer;
 }
 
 .section > div:hover{
-  background-color: var(--bg2);
+  background-color: var(--bgList1);
 }
 
 .section > div:active{
-  background-color: var(--bg3);
+  background-color: var(--bgList2);
 }
 
 .column1{
@@ -50,6 +49,7 @@
 
 .column1 svg, .column1 path{
   font-size: 20px;
+  color: var(--clrFont);
   cursor: pointer;
 }
 
@@ -96,12 +96,14 @@
 .column2 h1{
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clr1);
+  color: var(--clrFont);
   cursor: pointer;
 }
 
 .column2 h2{
   font-size: 14px;
+  text-transform: capitalize;
+  color: var(--clrFont);
   cursor: pointer;
 }
 

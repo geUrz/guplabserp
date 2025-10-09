@@ -1,5 +1,5 @@
 import webPush from 'web-push';
-import { connection } from '@/libs/db';
+import connection from '@/libs/db';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { IconClose } from '@/components/Layouts'
+import { IconClose, IconDel } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import axios from 'axios'
-import { FaTrash } from 'react-icons/fa'
 import styles from './ReciboConceptosEditForm.module.css'
 
 export function ReciboConceptosEditForm(props) {
@@ -90,7 +89,7 @@ export function ReciboConceptosEditForm(props) {
               <Label>Tipo</Label>
               <Dropdown
                 name="tipo"
-                placeholder='Selecciona una opción'
+                placeholder='Seleccionar'
                 fluid
                 selection
                 options={opcionesSerprod}
@@ -130,15 +129,13 @@ export function ReciboConceptosEditForm(props) {
               {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
+          <Button primary onClick={handleUpdateConcept}>
+            Guardar
+          </Button>
         </Form>
 
-        <Button primary onClick={handleUpdateConcept}>
-          Guardar
-        </Button>
+        <IconDel setShowConfirmDel={() => onOpenCloseConfirm(newConcept)} />
 
-        <div className={styles.iconDel}>
-          <div><FaTrash onClick={() => onOpenCloseConfirm(newConcept)} /></div>
-        </div>
       </div>
     </>
   )

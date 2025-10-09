@@ -1,16 +1,20 @@
+import styles from './usuarios.module.css'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { BasicLayout, BasicModal } from '@/layouts'
-import { Add, Loading, Title, ToastSuccess } from '@/components/Layouts'
+import { Add, ErrorAccesso, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { useAuth } from '@/contexts/AuthContext'
 import { SearchUsuarios, UsuarioForm, UsuariosLista, UsuariosListSearch } from '@/components/Usuarios'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
-import { FaSearch } from 'react-icons/fa'
-import styles from './usuarios.module.css'
+import { usePermissions } from '@/hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchUsuarios } from '@/store/usuarios/usuarioSlice'
+import { selectUsuariosError } from '@/store/usuarios/usuarioSelectors'
 
 export default function Usuarios() {
 
-  const { user, loading } = useAuth()
+  const { user, logout, loading } = useAuth()
+  
+  const { isAdmin, isSuperUser } = usePermissions()
 
   const [reload, setReload] = useState()
 
@@ -26,21 +30,28 @@ export default function Usuarios() {
 
   const [resultados, setResultados] = useState([])
 
-  const [usuarios, setUsuarios] = useState(null)
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const error = useSelector(selectUsuariosError)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get('/api/usuarios/usuarios')
-        setUsuarios(res.data)
-      } catch (error) {
-        console.error(error)
-      }
-    })()
-  }, [user, reload])
+    if (error) {
+      setApiError(error)
+      setErrorModalOpen(true)  
+    }
+  }, [error])
+
+  useEffect(() => {
+    if (!user) return
+    dispatch(fetchUsuarios(user))
+  }, [dispatch, reload, user])  
 
   const [toastSuccess, setToastSuccess] = useState(false)
-  const [toastSuccessMod, setToastSuccessMod] = useState(false)
+  const [toastSuccessDel, setToastSuccessReportesDel] = useState(false)
 
   const onToastSuccess = () => {
     setToastSuccess(true)
@@ -49,15 +60,15 @@ export default function Usuarios() {
     }, 3000)
   }
 
-  const onToastSuccessMod = () => {
-    setToastSuccessMod(true)
+  const onToastSuccessDel = () => {
+    setToastSuccessReportesDel(true)
     setTimeout(() => {
-      setToastSuccessMod(false)
+      setToastSuccessReportesDel(false)
     }, 3000)
   }
 
   if (loading) {
-    return <Loading size={45} loading={0} />
+    return <Loading size={45} loading={'L'} />
   }
 
   return (
@@ -66,44 +77,41 @@ export default function Usuarios() {
 
       <BasicLayout relative categorie='usuario' onReload={onReload}>
 
-        {toastSuccess&& <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccessUsuario(false)} />}
+        {toastSuccess && <ToastSuccess onClose={() => setToastSuccessUsuario(false)} />}
 
-        {toastSuccessMod && <ToastSuccess contain='Modificado exitosamente' onClose={() => setToastSuccessUsuarioMod(false)} />}
+        {toastSuccessDel && <ToastDelete onClose={() => setToastSuccessReportesDel(false)} />}
 
         <Title title='Usuarios' />
 
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchUsuarios user={user} onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <UsuariosListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
+        <Add onOpenClose={onOpenCloseForm} />
 
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar usuario</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
+        <Search
+          title='usuario'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          user={user}
+          logout={logout}
+          reload={reload}
+          onReload={onReload}
+          isAdmin={isAdmin} 
+          isSuperUser={isSuperUser}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchUsuarios}
+          SearchListComponent={UsuariosListSearch}
+          onToastSuccess={onToastSuccess}
+        />
 
-        {user && user.nivel === 'Admin' ?
-          <Add onOpenClose={onOpenCloseForm} /> : null
-        }
-
-        <UsuariosLista user={user} loading={loading} reload={reload} onReload={onReload} usuarios={usuarios} onToastSuccessMod={onToastSuccessMod} />
+        <UsuariosLista user={user} logout={logout} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
       <BasicModal title='crear usuario' show={openForm} onClose={onOpenCloseForm}>
         <UsuarioForm reload={reload} onReload={onReload} onOpenCloseForm={onOpenCloseForm} onToastSuccess={onToastSuccess} />
+      </BasicModal>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
       </BasicModal>
 
     </ProtectedRoute>

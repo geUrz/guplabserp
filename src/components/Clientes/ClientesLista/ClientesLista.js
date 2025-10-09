@@ -9,7 +9,7 @@ import styles from './ClientesLista.module.css'
 
 export function ClientesLista(props) {
 
-  const { reload, onReload, clientes, onToastSuccessMod, onToastSuccessDel } = props
+  const { isAdmin, isSuperUser, reload, onReload, clientes, onToastSuccess, onToastSuccessDel } = props
 
   const [showDetalles, setShowDetalles] = useState(false)
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null)
@@ -68,7 +68,7 @@ export function ClientesLista(props) {
       )}
 
       <BasicModal title='detalles del cliente' show={showDetalles} onClose={onCloseDetalles}>
-        <ClienteDetalles reload={reload} onReload={onReload} cliente={clienteSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
+        <ClienteDetalles isAdmin={isAdmin} isSuperUser={isSuperUser} reload={reload} onReload={onReload} cliente={clienteSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

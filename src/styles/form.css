@@ -9,25 +9,26 @@
   padding-left: 5px !important;
   width: 300px !important;
   font-size: 12.5px !important;
-  color: azure !important;
-  background-color: var(--bg2) !important;
+  color: var(--clrFont) !important;
+  background-color: var(--bgInput) !important;
+  border: none !important;
 }
 
 .ui.form input:focus, .ui.form textarea:focus, .ui.form select:focus{
-  border-color: var(--bg4) !important;
-  background-color: var(--bg4) !important;
+  border-color: var(--bgInputFocus) !important;
+  background-color: var(--bgInputFocus) !important;
 }
 
 .ui.form .field.field input:-webkit-autofill{
-  color: white !important;
-  box-shadow: 0 0 0 100px var(--bg2) inset !important;
-  border-color: var(--bg2) !important;
+  box-shadow: 0 0 0 100px var(--bgInputAutofill) inset !important;
+  border-color: var(--bgInputAutofill) !important;
+  transition: none !important;
 }
 
 .ui.form .field.field input:-webkit-autofill:focus{
-  color: white !important;
-  box-shadow: 0 0 0 100px var(--bg4) inset !important;
-  border-color: var(--bg4) !important;
+  box-shadow: 0 0 0 100px var(--bgInputAutofill) inset !important;
+  border-color: var(--bgInputAutofill) !important;
+  transition: none !important;
 }
 
 .ui.form select{
@@ -35,12 +36,12 @@
   width: 300px !important;
   font-size: 12.5px;
   text-transform: capitalize;
-  color: azure !important;
-  background-color: var(--bg2) !important;
+  color: var(--clrFont) !important;
+  background-color: var(--bgInput) !important;
 } 
 
 .ui.form option{
-  color: var(--clrGR40) !important;
+  color: var(--clrFont) !important;
 }
 
 .fields{
@@ -72,24 +73,47 @@
   width: 100%;
   height: auto;
   font-size: 14px;
-  color: var(--clr1) !important;
+  color: var(--clrFont) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start;
-  background-color: var(--bg0) !important;
+  background-color: var(--bgBody) !important;
 }
 
 .ui.page.modals{
-  background-color: rgba(0, 0, 0, .85 );
+  background-color: rgba(34, 46, 63, 0.85);
 }
 
-.field.error input, .field.error select, .field.error textarea{
-  border: 1px solid azure !important;
+.field.error input, .field.error select, .field.error textarea, .ui.form .field.error .ui.dropdown{
+  border: none !important;
 }
+
+.ui.form .field.error .ui.dropdown:hover{
+  border: none !important;
+}
+
+.ui.form .field.error .ui.dropdown .menu .item{
+  background-color: var(--bgInput) !important;
+}
+
+.ui.form .field.error .ui.dropdown .menu .active.item{
+  background-color: var(--bgInput) !important;
+}
+
+.ui.form .field.error .ui.dropdown .menu .item:hover, .ui.form .field.error .ui.dropdown .item:hover .text{
+  background-color: var(--bgInputHover) !important;
+}
+
+.ui.form .field.error .ui.dropdown .text{
+  border: none !important;
+  background-color: var(--bgInput) !important;
+} 
 
 .ui.message{
   text-align: center;
-  color: red !important;
+  color: var(--bgBtnN) !important;
+  background-color: var(--bgBox0) !important;
+  box-shadow: none !important;
 }
 
 .rbc-agenda-view table{
@@ -104,26 +128,28 @@
 
 .ui.selection.dropdown{
   width: 300px !important;
-  background-color: var(--bg2) !important;
+  border: none !important;
+  background-color: var(--bgInput) !important;
 }
 
 .ui.dropdown .menu .item span, .ui.dropdown .text{
   text-transform: capitalize;
   cursor: pointer !important;
-  color: azure !important;
+  color: var(--clrFont) !important;
 }
 
 .ui.dropdown{
-  border: 1px solid var(--bg2) !important;
+  border: none !important;
 }
 
 .ui.dropdown .menu:focus, .ui.dropdown:focus, .ui.dropdown:active{
-  border: 1px solid var(--bg2) !important;
+  background-color: var(--bgInput) !important;
+  border: none !important;
 }
 
 .ui.dropdown .menu{
-  border: 1px solid var(--bg2) !important;
-  background-color: var(--bg2) !important;
+  border: none!important;
+  background-color: var(--bgInput) !important;
 }
 
 .ui.selection.dropdown .menu>.item{
@@ -135,20 +161,20 @@
 }
 
 .ui.tabular.menu .item{
-  color: gray;
-  background-color: var(--bg1) !important;
+  color: var(--clrFont);
+  background-color: var(--bgTabPane) !important;
   border: none;
 }
 
 .ui.tabular.menu .active.item{
-  color: azure;
-  background-color: var(--bg2) !important;
+  color: var(--clrFont);
+  background-color: var(--bgTabPane1) !important;
   border: none;
 }
 
 .ui.tabular.menu .item:hover{
-  color: azure;
-  background-color: var(--bg3) !important;
+  color: var(--clrFont);
+  background-color: var(--bgTabPane1) !important;
 }
 
 

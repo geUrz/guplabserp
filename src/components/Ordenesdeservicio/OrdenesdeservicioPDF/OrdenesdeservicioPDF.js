@@ -48,32 +48,32 @@ export function OrdenesdeservicioPDF(props) {
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('#######', 15, 23)
+    doc.text('CLICKNET', 15, 23)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('###################', 15, 27)
-    doc.text('####################', 15, 31)
-    doc.text('###################', 15, 35)
-    doc.text('#########', 15, 39)
+    doc.text('Punta Este Corporativo', 15, 27)
+    doc.text('Calzada Carranza 951,', 15, 31)
+    doc.text('Piso 10 Suite 304, Interior "E"', 15, 35)
+    doc.text('C.P. 2125', 15, 39)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('############################', 15, 43)
+    doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('##############', 15, 47)
+    doc.text('RFC: EIEJ8906244J3', 15, 47)
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('Cliente', 15, 54)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(ordserv.cliente_nombre)}`, 15, 58)
+    doc.text(`${getValueOrDefault(reporteData.cliente_nombre)}`, 15, 58)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('Atención a', 15, 64)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(ordserv.cliente_contacto)}`, 15, 68)
+    doc.text(`${getValueOrDefault(reporteData.cliente_contacto)}`, 15, 68)
 
     doc.setFontSize(`${font1}`)
     doc.setFont("helvetica", "bold")
@@ -85,7 +85,7 @@ export function OrdenesdeservicioPDF(props) {
     doc.text('Folio', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Folio'), 50)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(ordserv.folio)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${getValueOrDefault(ordserv.folio)}`), 54)
+    doc.text(`${getValueOrDefault(reporteData.folio)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${getValueOrDefault(reporteData.folio)}`), 54)
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
@@ -93,8 +93,8 @@ export function OrdenesdeservicioPDF(props) {
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
     doc.text(
-      `${getValueOrDefault(formatDateIncDet(ordserv.createdAt))}`,
-      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${getValueOrDefault(formatDateIncDet(ordserv.createdAt))}`),
+      `${getValueOrDefault(formatDateIncDet(reporteData.createdAt))}`,
+      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${getValueOrDefault(formatDateIncDet(reporteData.createdAt))}`),
       64
     )
 

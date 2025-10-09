@@ -1,19 +1,20 @@
-import { IconClose } from '@/components/Layouts'
+import styles from './ClienteForm.module.css'
+import { DatosOb, IconClose } from '@/components/Layouts'
 import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useState } from 'react'
 import { genCLId } from '@/helpers'
 import axios from 'axios'
-import styles from './ClienteForm.module.css'
-import { useAuth } from '@/contexts/AuthContext'
 
 export function ClienteForm(props) {
 
   const { reload, onReload, onToastSuccess, onCloseForm } = props
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const [nombre, setNombre] = useState('')
   const [contacto, setContacto] = useState('')
-  const [cel, setCel] = useState('')
   const [direccion, setDireccion] = useState('')
+  const [cel, setCel] = useState('')
   const [email, setEmail] = useState('')
 
   const [errors, setErrors] = useState({})
@@ -29,10 +30,6 @@ export function ClienteForm(props) {
       newErrors.contacto = 'El campo es requerido'
     }
 
-    if (!cel) {
-      newErrors.cel = 'El campo es requerido'
-    }
-
     setErrors(newErrors)
 
     return Object.keys(newErrors).length === 0
@@ -45,6 +42,8 @@ export function ClienteForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     const folio = genCLId(4)
 
     try {
@@ -52,8 +51,8 @@ export function ClienteForm(props) {
         folio,
         nombre, 
         contacto, 
-        cel, 
         direccion, 
+        cel, 
         email,
       })
 
@@ -72,8 +71,8 @@ export function ClienteForm(props) {
 
       setNombre('')
       setContacto('')
-      setCel('')
       setDireccion('')
+      setCel('')
       setEmail('')
 
       onReload()
@@ -82,6 +81,8 @@ export function ClienteForm(props) {
 
     } catch (error) {
         console.error('Error al crear el cliente:', error)
+    } finally {
+        setIsLoading(false)
     }
 
   }
@@ -95,31 +96,22 @@ export function ClienteForm(props) {
       <Form>
         <FormGroup widths='equal'>
           <FormField error={!!errors.nombre}>
-            <Label>Nombre</Label>
+            <Label>Cliente*</Label>
             <Input
               type="text"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
             />
-            {errors.nombre && <Message negative>{errors.nombre}</Message>}
+            {errors.nombre && <Message>{errors.nombre}</Message>}
           </FormField>
           <FormField error={!!errors.contacto}>
-            <Label>Contacto</Label>
+            <Label>Contacto*</Label>
             <Input
               type="text"
               value={contacto}
               onChange={(e) => setContacto(e.target.value)}
             />
-            {errors.contacto && <Message negative>{errors.contacto}</Message>}
-          </FormField>
-          <FormField error={!!errors.cel}>
-            <Label>Celular</Label>
-            <Input
-              type="number"
-              value={cel}
-              onChange={(e) => setCel(e.target.value)}
-            />
-            {errors.cel && <Message negative>{errors.cel}</Message>}
+            {errors.contacto && <Message>{errors.contacto}</Message>}
           </FormField>
           <FormField>
             <Label>Dirección</Label>
@@ -127,6 +119,14 @@ export function ClienteForm(props) {
               type="text"
               value={direccion}
               onChange={(e) => setDireccion(e.target.value)}
+            />
+          </FormField>
+          <FormField>
+            <Label>Celular</Label>
+            <Input
+              type="number"
+              value={cel}
+              onChange={(e) => setCel(e.target.value)}
             />
           </FormField>
           <FormField>
@@ -138,7 +138,10 @@ export function ClienteForm(props) {
             />
           </FormField>
         </FormGroup>
-        <Button primary onClick={crearCliente}>Crear</Button>
+        <Button primary loading={isLoading} onClick={crearCliente}>Crear</Button>
+      
+        <DatosOb />
+      
       </Form>
 
     </>

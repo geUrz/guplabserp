@@ -31,3 +31,18 @@ export function formatTotal(price, quantity) {
   // Usamos toLocaleString para formatear el total con comas y dos decimales
   return total ? `$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '';
 }
+
+export const formatCurrencyInput = (value) => {
+  const number = Number(value) || '$';
+  return number.toLocaleString("es-MX", {
+    style: "currency",
+    currency: "MXN",
+    minimumFractionDigits: 0,
+  });
+}
+
+export const parseCurrencyInput = (input) => {
+  const cleaned = input.replace(/\D/g, "");
+  if (cleaned === "") return 0;
+  return parseInt(cleaned, 10);
+}

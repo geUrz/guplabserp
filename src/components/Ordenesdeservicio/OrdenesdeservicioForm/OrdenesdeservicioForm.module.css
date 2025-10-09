@@ -24,12 +24,12 @@
 
 .addCliente h1{
   font-size: 11.5px;
-  color: var(--clr1);
+  color: var(--clrGlobalN);
 }
 
 .addCliente svg, .addCliente path{
   margin-left: 5px;
-  color: var(--clr2);
+  color: var(--clrGlobalN);
   cursor: pointer;
 }
 

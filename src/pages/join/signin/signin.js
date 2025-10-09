@@ -1,60 +1,22 @@
-import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
-import { useEffect, useState, useRef } from 'react'
+import { Button, Form, FormField, FormGroup, Image, Input, Label, Message } from 'semantic-ui-react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { BasicJoin } from '@/layouts'
-import { FaUser } from 'react-icons/fa'
 import Link from 'next/link'
 import { useRedirectIfAuthenticated } from '@/hooks'
 import styles from './signin.module.css'
+import { Loading } from '@/components/Layouts'
 
 export default function Signin() {
 
-  const [keyCode, setKeyCode] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleKeyCode = (event) => {
-    if(event.ctrlKey && event.key === 'l') {
-      setKeyCode((prevState) => !prevState)
-    }
-  }
+  const [theme, setTheme] = useState(null)
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyCode);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyCode);
-    }
+    const storedTheme = localStorage.getItem('theme')
+    setTheme(storedTheme) // puede ser 'light' o 'dark'
   }, [])
-
-  const gestureAreaRef = useRef(null);
-
-  const handleTouchStart = (e) => {
-    e.currentTarget.touchStartTime = e.timeStamp;
-  };
-
-  const handleTouchEnd = (e) => {
-    const touchDuration = e.timeStamp - e.currentTarget.touchStartTime;
-    if (touchDuration > 100) {
-      setKeyCode((prevState) => !prevState)
-      console.log('Toque prolongado detectado');
-      // Realiza alguna acción
-    }
-  };
-
-  useEffect(() => {
-    const element = gestureAreaRef.current;
-    if (element) {
-      element.addEventListener('touchstart', handleTouchStart);
-      element.addEventListener('touchend', handleTouchEnd);
-    }
-
-    return () => {
-      if (element) {
-        element.removeEventListener('touchstart', handleTouchStart);
-        element.removeEventListener('touchend', handleTouchEnd);
-      }
-    };
-  }, []);
-
+  
   const [errors, setErrors] = useState({})
 
   const [credentials, setCredentials] = useState({
@@ -64,7 +26,7 @@ export default function Signin() {
 
   useRedirectIfAuthenticated()
 
-  const { login } = useAuth()
+  const { login, loading } = useAuth()
   const [error, setError] = useState(null)
 
   const handleChange = (e) => {
@@ -95,68 +57,124 @@ export default function Signin() {
     if (!validarFormSignIn()) {
       return
     }
+
+    setIsLoading(true)
     setError(null)
 
     try {
       await login(credentials.emailOrUsuario, credentials.password)
     } catch (error) {
       console.error('Error capturado:', error);
-      
+
       if (error?.status === 401) {
         setError(error.data.error || '¡ Correo o contraseña no existe !');
       } else {
         setError(error?.data?.error || '¡ Ocurrió un error inesperado !');
       }
-   }
+    } finally {
+        setIsLoading(false)
+    }
   }
+
+  const [activate, setActivate] = useState(false)
+
+  const timer = useRef(null)
+
+  const handleTouchStart = () => {
+    timer.current = setTimeout(() => {
+      setActivate(prev => !prev)
+    }, 3000)
+  }
+
+  const handleTouchEnd = () => {
+    clearTimeout(timer.current)
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.ctrlKey && e.key === '0') {
+      e.preventDefault()
+      setActivate((prevState) => !prevState)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  if (loading) {
+      return <Loading size={45} loading={0} />
+    }
 
   return (
 
-    <BasicJoin relative>
+    <>
 
-      <div className={styles.user}>
-        <FaUser />
-        <h1>Iniciar sesión</h1>
+      <div className={styles.main}>
+
+        <div className={styles.boxForm}>
+
+          <div className={styles.logo}>
+            <Image src={theme != 'dark' ? '/img/logoB.webp' : '/img/logoW.webp'} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} />
+          </div>
+
+          <div className={styles.h1}>
+            <h1>Iniciar sesión</h1>
+          </div>
+
+          <Form onSubmit={handleSubmit}>
+            <FormGroup widths='equal'>
+              <FormField error={!!errors.emailOrUsuario}>
+                <Label>Usuario</Label>
+                <Input
+                  name='emailOrUsuario'
+                  type='text'
+                  value={credentials.emailOrUsuario}
+                  onChange={handleChange}
+                />
+                {errors.emailOrUsuario && <Message>{errors.emailOrUsuario}</Message>}
+              </FormField>
+              <FormField error={!!errors.password}>
+                <Label>Contraseña</Label>
+                <Input
+                  name='password'
+                  type='password'
+                  value={credentials.password}
+                  onChange={handleChange}
+                />
+                {errors.password && <Message>{errors.password}</Message>}
+              </FormField>
+            </FormGroup>
+            {error && <Message>{error}</Message>}
+            <Button primary loading={isLoading} type='submit'>
+              Iniciar sesión
+            </Button>
+          </Form>
+
+          {activate ? (
+            <div className={styles.link}>
+              <Link href='/join/signup'>
+                ¿No tienes un usuario?, Crea uno aquí
+              </Link>
+            </div>
+          ) : (
+            ''
+          )}
+
+        </div>
+
+        <div className={styles.footer}>
+          <div className={styles.section}>
+            <h1>© 2025 GUPLabs</h1>
+          </div>
+        </div>
+
       </div>
 
-      <Form onSubmit={handleSubmit}>
-        <FormGroup>
-          <FormField error={!!errors.emailOrUsuario}>
-            <Label>Usuario / Correo</Label>
-            <Input
-              name='emailOrUsuario'
-              type='text'
-              value={credentials.emailOrUsuario}
-              onChange={handleChange}
-            />
-            {errors.emailOrUsuario && <Message>{errors.emailOrUsuario}</Message>}
-          </FormField>
-          <FormField error={!!errors.password}>
-            <Label>Contraseña</Label>
-            <Input
-              name='password'
-              type='password'
-              value={credentials.password}
-              onChange={handleChange}
-            />
-            {errors.password && <Message>{errors.password}</Message>}
-          </FormField>
-        </FormGroup>
-        {error && <Message>{error}</Message>}
-        <Button primary type='submit'>Iniciar sesión</Button>
-      </Form>
-
-      {keyCode ? (
-        <div className={styles.link}>
-          <Link href='/join/signup'>
-            Crear cuenta
-          </Link>
-        </div>
-      ) : (
-        ''
-      )}
-
-    </BasicJoin>
+    </>
 
   )
 }

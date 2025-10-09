@@ -1,10 +1,12 @@
+import styles from './CotizacionPDF.module.css'
 import { BiSolidFilePdf } from 'react-icons/bi'
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
-import styles from './CotizacionPDF.module.css'
 import { formatPrice, formatQuantity, formatTipo, formatTotal } from '@/helpers/formatPrice'
+import { useState } from 'react'
+import { Loading } from '@/components/Layouts'
 
 const openDB = () => {
   return new Promise((resolve, reject) => {
@@ -30,7 +32,7 @@ const getToggleIVA = async () => {
 
   return new Promise((resolve, reject) => {
     const request = store.get('toggleIVA')
-    request.onsuccess = (e) => resolve(e.target.result?.toggleIVA || false) // Devuelve true por defecto
+    request.onsuccess = (e) => resolve(e.target.result?.toggleIVA || false) 
     request.onerror = (e) => reject(e.target.error)
   })
 }
@@ -39,7 +41,11 @@ export function CotizacionPDF(props) {
 
   const { cotizacionData, conceptos, ivaValue } = props
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const generarPDF = async () => {
+
+    setIsLoading(true)
 
     if (!cotizacionData) return
 
@@ -54,6 +60,7 @@ export function CotizacionPDF(props) {
     )
 
     const logoImg = 'img/logo.png'
+    /* const logoImg = 'img/logo1.webp' */
     const logoWidth = 58
     const logoHeight = 16
     const marginRightLogo = 12
@@ -73,7 +80,7 @@ export function CotizacionPDF(props) {
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('CLICKNETMX', 15, 23)
+    doc.text('CLICKNET', 15, 23)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
     doc.text('Punta Este Corporativo', 15, 27)
@@ -85,18 +92,22 @@ export function CotizacionPDF(props) {
     doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('RFC: EIEJ8906244J3', 15, 47)
+    doc.text('RFC: EIEJ8906244J3', 15, 47)    
 
     doc.setFontSize(`${font2}`)
+    doc.setFont("helvetica", "bold")
     doc.setTextColor(0, 0, 0)
     doc.text('Cliente', 15, 54)
     doc.setFontSize(`${font2}`)
+    doc.setFont("helvetica", "normal")
     doc.setTextColor(120, 120, 120)
     doc.text(`${getValueOrDefault(cotizacionData.cliente_nombre)}`, 15, 58)
     doc.setFontSize(`${font2}`)
+    doc.setFont("helvetica", "bold")
     doc.setTextColor(0, 0, 0)
     doc.text('Atención a', 15, 64)
     doc.setFontSize(`${font2}`)
+    doc.setFont("helvetica", "normal")
     doc.setTextColor(120, 120, 120)
     doc.text(`${getValueOrDefault(cotizacionData.cliente_contacto)}`, 15, 68)
 
@@ -105,17 +116,19 @@ export function CotizacionPDF(props) {
     doc.setTextColor(0, 0, 0)
     doc.text('COTIZACIÓN', doc.internal.pageSize.width - marginRight - doc.getTextWidth('COTIZACIÓN'), 44)
     doc.setFontSize(`${font2}`)
-    doc.setFont("helvetica", "normal")
     doc.setTextColor(0, 0, 0)
     doc.text('Folio', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Folio'), 50)
     doc.setFontSize(`${font2}`)
+    doc.setFont("helvetica", "normal")
     doc.setTextColor(120, 120, 120)
     doc.text(`${cotizacionData.folio}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${cotizacionData.folio}`), 54)
 
     doc.setFontSize(`${font2}`)
+    doc.setFont("helvetica", "bold")
     doc.setTextColor(0, 0, 0)
     doc.text('Fecha', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Fecha'), 60)
     doc.setFontSize(`${font2}`)
+    doc.setFont("helvetica", "normal")
     doc.setTextColor(120, 120, 120)
     doc.text(
       `${formatDateIncDet(cotizacionData.createdAt)}`,
@@ -123,7 +136,7 @@ export function CotizacionPDF(props) {
       64
     )
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: 75,
       head: [
         [
@@ -138,13 +151,21 @@ export function CotizacionPDF(props) {
         cellPadding: 1.5,
         cellWidth: 'auto',
       },
-      body: conceptos.map(concepto => [
-        { content: `${formatTipo(concepto.tipo)}`, styles: { halign: 'center' } },
-        { content: `${concepto.concepto}`, styles: { halign: 'left' } },
-        { content: `${formatPrice(concepto.precio)}`, styles: { halign: 'right' } },
-        { content: `${formatQuantity(concepto.cantidad)}`, styles: { halign: 'center' } },
-        { content: `${formatTotal(concepto.precio, concepto.cantidad)}`, styles: { halign: 'right' } },
-      ]),
+      body: conceptos.map(concepto => {
+        return [
+          { content: `${formatTipo(concepto.tipo)}`, styles: { halign: 'center' } },
+          { content: `${concepto.concepto}`, styles: { halign: 'left' } },
+          concepto.tipo !== '.' 
+            ? { content: `${formatPrice(concepto.precio)}`, styles: { halign: 'right' } }
+            : { content: '', styles: { halign: 'right' } },
+          concepto.tipo !== '.' 
+            ? { content: `${formatQuantity(concepto.cantidad)}`, styles: { halign: 'center' } }
+            : { content: '', styles: { halign: 'center' } },
+          concepto.tipo !== '.' 
+            ? { content: `${formatTotal(concepto.precio, concepto.cantidad)}`, styles: { halign: 'right' } }
+            : { content: '', styles: { halign: 'right' } },
+        ]
+      }),      
       headStyles: {
         fillColor: [255, 255, 255],
         fontSize: `${font3}`,
@@ -206,10 +227,10 @@ export function CotizacionPDF(props) {
 
     const verticalData = [
       ...toggleIVA ? [
-        ['Subtotal:', `$${formatCurrency(subtotal)}`],
-        ['IVA:', `$${formatCurrency(iva)}`],
+        ['Subtotal:', `${formatCurrency(subtotal)}`],
+        ['IVA:', `${formatCurrency(iva)}`],
       ] : [],
-      ['Total:', `$${formatCurrency(total)}`]
+      ['Total:', `${formatCurrency(total)}`]
     ];
 
     const pWidth = doc.internal.pageSize.getWidth()
@@ -217,7 +238,7 @@ export function CotizacionPDF(props) {
     const tableWidth = 44
     const marginLeft = pWidth - mRight - tableWidth
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: 230,
       margin: { left: marginLeft, bottom: 0, right: marginRight },
       body: verticalData,
@@ -236,9 +257,10 @@ export function CotizacionPDF(props) {
     doc.setFontSize(`${font3}`)
     doc.setTextColor(0, 0, 0)
     doc.text('• Precio en pesos.', 50, 260)
-    doc.text('• Todos nuestros equipos cuentan con 1 año de garantia', 50, 265)
-    doc.text('  por defecto de fabrica. Aplican restricciones.', 50, 270)
-    doc.text('• Esta cotización tiene una vigencia de 15 dias', 50, 275)
+    doc.text('• Se requiere un anticipo del 50%.', 50, 265)
+    doc.text('• Todos nuestros equipos cuentan con 1 año de garantía', 50, 270)
+    doc.text('  por defecto de fabrica.', 50, 275)
+    doc.text('• Esta cotización tiene una vigencia de 15 días.', 50, 280)
 
     const qrCodeText = 'https://www.facebook.com/clicknet.mx'
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeText)
@@ -257,13 +279,23 @@ export function CotizacionPDF(props) {
     addFooterText()
 
     doc.save(`cotizacion_${cotizacionData.folio}.pdf`)
+
+    setIsLoading(false)
+
   }
 
   return (
 
     <div className={styles.iconPDF}>
       <div onClick={generarPDF}>
-        <BiSolidFilePdf />
+        {isLoading ? (
+          <Loading 
+            size={30}
+            loading={3}
+          />
+        ) : (
+          <BiSolidFilePdf />
+        )}
       </div>
     </div>
 

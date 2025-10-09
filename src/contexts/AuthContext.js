@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
     async function loadUserFromCookies() {
       try {
         const response = await axios.get('/api/auth/me')
-        setUser(response.data.user) // Asegúrate de que `user` incluya el `id`
+        setUser(response.data.user)
       } catch (error) {
         setUser(null)
       } finally {
@@ -22,16 +22,16 @@ export function AuthProvider({ children }) {
     }
   
     if (!user) {
-      loadUserFromCookies() // Forzar la recarga del usuario si no está disponible
+      loadUserFromCookies()
     }
   }, [user])
 
   const login = async (emailOrUsuario, password) => {
     try {
       const response = await axios.post('/api/auth/login', { emailOrUsuario, password });
-      const userResponse = await axios.get('/api/auth/me'); // Obtener el usuario actualizado
-      setUser(userResponse.data.user); // Asegúrate de que `user` incluya el `id`
-      router.push('/'); // Redirigir después de iniciar sesión
+      const userResponse = await axios.get('/api/auth/me')
+      setUser(userResponse.data.user)
+      router.push('/')
     } catch (error) {
       if (error.response) {
         throw error.response;

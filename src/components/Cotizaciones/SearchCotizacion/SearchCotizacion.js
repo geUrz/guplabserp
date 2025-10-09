@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Input } from 'semantic-ui-react';
-import { CotizacionListSearch, RecibosListSearch } from '../CotizacionListSearch';
+import { CotizacionListSearch } from '../CotizacionListSearch';
 import { FaTimesCircle } from 'react-icons/fa';
 import styles from './SearchCotizacion.module.css';
-import { useAuth } from '@/contexts/AuthContext';
 
 export function SearchCotizacion(props) {
 
-  const {reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod} = props
-
-  const {user} = useAuth()
+  const {reload, onReload, onResults, onOpenCloseSearch, onToastSuccess} = props
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
@@ -62,7 +59,7 @@ export function SearchCotizacion(props) {
         {error && <p>{error}</p>}
         {cotizaciones.length > 0 && (
           <div className={styles.resultsContainer}>
-            <CotizacionListSearch cotizaciones={cotizaciones} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <CotizacionListSearch cotizaciones={cotizaciones} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
           </div>
         )}
       </div>

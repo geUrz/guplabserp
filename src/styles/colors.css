@@ -10,16 +10,118 @@
   --bg8: rgb(80, 80, 80);
   --bg9: rgb(95, 95, 95);
   --bg10: rgb(110, 110, 110);
+
+  --bgBody: rgb(248, 248, 248);
+  --bgSearch: rgba(240, 255, 255, .9);
+  --clrFont: rgb(53, 69, 90);
   
-  --clr0: rgb(190, 81, 13);
-  --clr1: rgb(202, 89, 19);
-  --clr2: rgb(218, 102, 30);
-  --clr3: rgb(224, 114, 45);
-  --clr4: rgb(235, 126, 58);
+  --bgBtnToast: rgb(53, 69, 90);
 
+  --bgMenuTop: rgb(233, 238, 245);
+  --bgMenuSide0: rgb(233, 238, 245);
+  --bgMenuSide1: rgb(255, 245, 239);
+  --bgMenuSide2: rgb(255, 239, 229);
 
-  --clrGR0: rgb(165, 165, 165);
-  --clrGR1: rgb(184, 184, 184);
-  --clrGR2: rgb(202, 202, 202);
+  --bgBox0: rgb(233, 238, 245);
+  --bgBox1: rgb(255, 62, 78);
+  --bgBox2: rgb(255, 75, 90);
+  --bgBoxFont: rgb(53, 69, 90);
+
+  --bgList0: rgb(234, 238, 245);
+  --bgList1: rgb(237, 241, 247);
+  --bgList2: rgb(237, 242, 250);
+
+  --bgInput: rgb(234, 238, 245);
+  --bgInputFocus: rgb(237, 241, 247);
+  --bgInputAutofill: rgb(237, 242, 250);
+
+  --bgTabPane: rgb(255, 248, 243);
+  --bgTabPane1: rgb(255, 239, 229);
+
+  --clrBtn: azure;
+  --bgBtnB: rgb(53, 69, 90);
+  --bgBtnB1: rgb(65, 82, 105);
+  --bgBtnB2: rgb(73, 91, 116);
+  --bgBtnN: rgb(255, 62, 78);
+  --bgBtnN1: rgb(255, 75, 90);
+  --bgBtnN2: rgb(255, 85, 99);
+
+  --bgModalToast: rgb(240, 255, 255, .9);
+
+  --bgSVGIMG: rgb(255, 239, 229);
+  --clrSVGIMG: rgb(131, 131, 131);
+
+  --clrGR0: rgb(50, 50, 50);
+  --clrGR1: rgb(160, 160, 160);
+  --clrGR2: rgb(184, 184, 184);
+  --clrGR3: rgb(202, 202, 202);
+
+  --clrR0: rgb(200, 0, 0);
+  --clrR1: rgb(220, 20, 20);
+  --clrR2: rgb(226, 30, 30);
+
+  --clrError: rgb(220, 20, 20);
+
+}
+
+[data-theme="dark"] {
+
+  --bg0:rgb(14, 14, 14);
+  --bg1:rgb(24, 24, 24);
+  --bg2: rgb(32, 32, 32);
+  --bg3: rgb(40, 40, 40);
+  --bg4: rgb(48, 48, 48);
+  --bg5: rgb(56, 56, 56);
+  --bg6: rgb(64, 64, 64);
+  --bg7: rgb(72, 72, 72);
+  --bg8: rgb(80, 80, 80);
+  --bg9: rgb(95, 95, 95);
+  --bg10: rgb(110, 110, 110);
+
+  --bgBody: rgb(43, 56, 75);
+  --bgSearch: rgba(34, 46, 63, .85);
+  --clrFont: rgb(174, 187, 206);
+
+  --bgBtnToast: rgb(255, 62, 78);
+
+  --bgMenuTop: rgb(36, 49, 68);
+  --bgMenuSide0: rgb(43, 56, 75);
+  --bgMenuSide1: rgb(45, 45, 45);
+  --bgMenuSide2: rgb(255, 239, 229);
+
+  --bgModalToast: rgba(34, 46, 63, .85);
+
+  --clrBtn: azure;
+  --bgBtnB: rgb(80, 80, 80);
+  --bgBtnB1: rgb(90, 90, 90);
+  --bgBtnB2: rgb(100, 100, 100);
+  --bgBtnN: rgb(255, 62, 78);
+  --bgBtnN1: rgb(255, 75, 90);
+  --bgBtnN2: rgb(255, 85, 99);
+
+  --bgSVGIMG: rgb(30, 30, 30);
+  --clrSVGIMG: rgb(174, 187, 206);
+
+  --bgList0: rgb(53, 69, 90);
+  --bgList1: rgb(63, 80, 104);
+  --bgList2: rgb(69, 87, 112);
+
+  --bgInput: rgb(53, 69, 90);
+  --bgInputFocus: rgb(64, 82, 105);
+  --bgInputAutofill: rgb(53, 69, 90);
+
+  --bgBox0: rgb(53, 69, 90);
+  --bgBox1: rgb(255, 62, 78);
+  --bgBox2: rgb(255, 75, 90);
+  --bgBoxFont: rgb(174, 187, 206);
+  
+  --bgTabPane: rgb(60, 60, 60);
+  --bgTabPane1: rgb(30, 30, 30);
+
+  --clrR0: rgb(200, 0, 0);
+  --clrR1: rgb(220, 20, 20);
+  --clrR2: rgb(226, 30, 30);
+
+  --clrError: rgb(220, 20, 20);
 
 }

@@ -1,73 +1,91 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Input } from 'semantic-ui-react';
-import { RecibosListSearch } from '../RecibosListSearch';
-import { FaTimesCircle } from 'react-icons/fa';
 import styles from './SearchRecibos.module.css';
+import { useState, useEffect } from 'react';
+import { Input } from 'semantic-ui-react';
+import { FaTimesCircle } from 'react-icons/fa';
+import { ErrorAccesso } from '@/components/Layouts';
+import { BasicModal } from '@/layouts';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearSearchResults, searchRecibos } from '@/store/recibos/reciboSlice';
+import { selectRecibos } from '@/store/recibos/reciboSelectors';
+import { RecibosListSearch } from '../RecibosListSearch';
 
 export function SearchRecibos(props) {
 
-  const {reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod} = props
+  const { user, logout, reload, onReload, onResults, isAdmin, isSuperUser, onOpenCloseSearch, onToastSuccess } = props
+
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [recibos, setRecibos] = useState([])
+  const recibos = useSelector(selectRecibos)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchData = async () => {
-      if (query.trim() === '') {
-        setRecibos([])
-        return
+      if (query.trim().length < 1) {
+        setError('')
+        dispatch(clearSearchResults())
+        return;
       }
 
       setLoading(true)
       setError('')
 
       try {
-        const res = await axios.get(`/api/recibos/recibos?search=${query}`)
-        const uniqueRecibos = [...new Set(res.data.map(recibo => recibo.id))]
-          .map(id => {
-            return res.data.find(recibo => recibo.id === id);
-          });
-
-        setRecibos(uniqueRecibos)
-      } catch (err) {
+        await dispatch(searchRecibos(query, user))
+      } catch (error) {
+        console.error(error)
+        setApiError(error.response?.data?.error || 'Error al cargar recibos')
+        setErrorModalOpen(true)
         setError('No se encontraron recibos')
-        setRecibos([])
       } finally {
         setLoading(false)
       }
-    };
+    }
 
     fetchData()
-  }, [query])
+  }, [query, dispatch, user])
 
   return (
-    <div className={styles.main}>
 
-      <div className={styles.input}>
-        <Input
-          type="text"
-          placeholder="Buscar recibo..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className={styles.searchInput}
-          loading={loading}
-        />
-        <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-          <FaTimesCircle />
+    <>
+
+      <div className={styles.main}>
+
+        <div className={styles.input}>
+          <Input
+            type="text"
+            placeholder="Buscar recibo..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className={styles.searchInput}
+            loading={loading}
+          />
+          <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
+            <FaTimesCircle />
+          </div>
+        </div>
+
+        <div className={styles.visitaLista}>
+          {error && <p>{error}</p>}
+          {recibos.length > 0 && (
+            <div className={styles.resultsContainer}>
+              <RecibosListSearch user={user} logout={logout} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} query={query} onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
+            </div>
+          )}
         </div>
       </div>
 
-      <div className={styles.visitaLista}>
-        {error && <p>{error}</p>}
-        {recibos.length > 0 && (
-          <div className={styles.resultsContainer}>
-            <RecibosListSearch recibos={recibos} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-          </div>
-        )}
-      </div>
-    </div>
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
+      </BasicModal>
+
+    </>
+
   )
 }

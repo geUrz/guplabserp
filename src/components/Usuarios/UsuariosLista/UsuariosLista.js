@@ -1,28 +1,42 @@
 import { useEffect, useState } from 'react'
 import { size, map } from 'lodash'
 import styles from './UsuariosLista.module.css'
-import axios from 'axios'
 import { ListEmpty, Loading } from '@/components/Layouts'
 import { FaUser } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { UsuarioDetalles } from '../UsuarioDetalles'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectUsuarios } from '@/store/usuarios/usuarioSelectors'
+import { setUsuario } from '@/store/usuarios/usuarioSlice'
+import { getValueOrDefault } from '@/helpers'
 
 export function UsuariosLista(props) {
 
-  const { user, loading, reload, onReload, usuarios, onToastSuccessMod } = props
+  const { user, logout, loading, isAdmin, isSuperUser, reload, onReload, onToastSuccess, onToastSuccessDel } = props
+
+  const dispatch = useDispatch()
+  const usuarios = useSelector(selectUsuarios)
 
   const [showDetalles, setShowDetalles] = useState(false)
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
+  const [showLoading, setShowLoading] = useState(true)
 
   const onOpenDetalles = (usuario) => {
-    setUsuarioSeleccionado(usuario)
+    dispatch(setUsuario(usuario))
     setShowDetalles(true)
   }
 
   const onCloseDetalles = () => {
-    setUsuarioSeleccionado(null)
+    dispatch(setUsuario(null))
     setShowDetalles(false)
   }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoading(false)
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
 
@@ -44,11 +58,11 @@ export function UsuariosLista(props) {
                   <div className={styles.column2}>
                     <div >
                       <h1>Nombre</h1>
-                      <h2>{usuario.nombre}</h2>
+                      <h2>{getValueOrDefault(usuario.nombre)}</h2>
                     </div>
                     <div >
                       <h1>Usuario</h1>
-                      <h2>{usuario.usuario}</h2>
+                      <h2>{getValueOrDefault(usuario.usuario)}</h2>
                     </div>
                   </div>
                 </div>
@@ -60,7 +74,7 @@ export function UsuariosLista(props) {
       )}
 
       <BasicModal title='detalles del usuario' show={showDetalles} onClose={onCloseDetalles}>
-        <UsuarioDetalles user={user} loading={loading} reload={reload} onReload={onReload} usuario={usuarioSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccessMod={onToastSuccessMod} />
+        <UsuarioDetalles user={user} logout={logout} loading={loading} isAdmin={isAdmin} isSuperUser={isSuperUser} reload={reload} onReload={onReload} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

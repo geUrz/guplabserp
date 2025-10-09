@@ -68,7 +68,7 @@ export function ConceptosEditForm(props) {
       <div className={styles.addConceptForm}>
         <Form onSubmit={handleSubmit}>
           <FormField error={!!errors.tipo}>
-            <Label>Tipo</Label>
+            <Label>Tipo*</Label>
             <Dropdown
               placeholder="Selecciona una opción"
               fluid
@@ -83,7 +83,7 @@ export function ConceptosEditForm(props) {
           </FormField>
 
           <FormField error={!!errors.concepto}>
-            <Label>Concepto</Label>
+            <Label>Concepto*</Label>
             <Input
               value={editedConcepto.concepto}
               onChange={(e) =>
@@ -94,7 +94,7 @@ export function ConceptosEditForm(props) {
           </FormField>
 
           <FormField error={!!errors.precio}>
-            <Label>Precio</Label>
+            <Label>Precio*</Label>
             <Input
               type="number"
               name="precio"
@@ -105,7 +105,7 @@ export function ConceptosEditForm(props) {
           </FormField>
 
           <FormField error={!!errors.cantidad}>
-            <Label>Cantidad</Label>
+            <Label>Qty*</Label>
             <Input
               type="number"
               name="cantidad"

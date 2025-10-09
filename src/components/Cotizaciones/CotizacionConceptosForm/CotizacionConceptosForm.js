@@ -3,10 +3,13 @@ import { IconClose } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import axios from 'axios'
 import styles from './CotizacionConceptosForm.module.css'
+import { formatCurrencyInput, parseCurrencyInput } from '@/helpers'
 
 export function CotizacionConceptosForm(props) {
 
   const { reload, onReload, cotizacionId, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [newConcept, setNewConcept] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
@@ -48,6 +51,8 @@ export function CotizacionConceptosForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     if (newConcept.tipo && (newConcept.tipo === '.' || (newConcept.concepto && newConcept.precio && newConcept.cantidad))) {
       try {
         const response = await axios.post(`/api/cotizaciones/conceptos`, {
@@ -72,7 +77,8 @@ export function CotizacionConceptosForm(props) {
           console.error('Error al agregar el concepto: Respuesta del servidor no fue exitosa', response)
         }
       } catch (error) {
-        //console.error('Error al agregar el concepto:', error.response?.data || error.message || error)
+      } finally {
+        setIsLoading(false)
       }
     } else {
       console.warn('Datos incompletos o inválidos para agregar concepto', newConcept)
@@ -84,6 +90,16 @@ export function CotizacionConceptosForm(props) {
     { key: 2, text: 'Producto', value: 'Producto' },
     { key: 3, text: '<vacio>', value: '.' }
   ]
+
+  const handlePrecioChange = (e) => {
+    const rawValue = e.target.value;
+    const numericValue = parseCurrencyInput(rawValue)
+
+    setNewConcept((prev) => ({
+      ...prev,
+      precio: numericValue,
+    }))
+  }
 
   return (
 
@@ -120,11 +136,11 @@ export function CotizacionConceptosForm(props) {
             <FormField error={!!errors.precio}>
               <Label>Precio</Label>
               <Input
-                type="number"
+                type="text"
                 name="precio"
-                value={newConcept.precio}
-                onChange={handleChange}
-                disabled={newConcept.tipo === '.'}  // Deshabilitar si el tipo es "<vacio>"
+                value={formatCurrencyInput(newConcept.precio)}
+                onChange={handlePrecioChange}
+                disabled={newConcept.tipo === '.'}
               />
               {errors.precio && <Message negative>{errors.precio}</Message>}
             </FormField>
@@ -140,11 +156,10 @@ export function CotizacionConceptosForm(props) {
               {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
+          <Button primary loading={isLoading} onClick={handleAddConcept}>
+            Agregar
+          </Button>
         </Form>
-
-        <Button primary onClick={handleAddConcept}>
-          Agregar concepto
-        </Button>
 
       </div>
 

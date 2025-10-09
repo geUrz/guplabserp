@@ -2,20 +2,13 @@ import mysql from 'mysql2/promise';
 
 // Configura la conexión a la base de datos
 const connection = mysql.createPool({
-  host: 'localhost',
+  host: process.env.NODE_ENV === 'production' ? process.env.DB_HOST_PRODUCTION : process.env.DB_HOST,
   user: 'root',
-  password: 'root',
-  database: 'clickneterp',
+  password: 'adm1nsql1',
+  database: 'guplabserp',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
 });
 
-const connectionClicknetControl = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'clicknetmxcontrol',
-});
-
-export { connection, connectionClicknetControl }
+export default connection  

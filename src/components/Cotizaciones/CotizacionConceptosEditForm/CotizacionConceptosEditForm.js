@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { IconClose } from '@/components/Layouts'
+import { IconClose, IconDel } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import axios from 'axios'
-import { FaTrash } from 'react-icons/fa'
 import styles from './CotizacionConceptosEditForm.module.css'
+import { formatCurrencyInput, parseCurrencyInput } from '@/helpers'
 
 export function CotizacionConceptosEditForm(props) {
 
   const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [newConcept, setNewConcept] = useState(conceptToEdit || { tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
@@ -56,6 +58,8 @@ export function CotizacionConceptosEditForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     try {
       const response = await axios.put(`/api/cotizaciones/conceptos?id=${newConcept.id}`, {
         tipo: newConcept.tipo,
@@ -74,6 +78,8 @@ export function CotizacionConceptosEditForm(props) {
       }
     } catch (error) {
       console.error('Error al actualizar el concepto:', error)
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -82,6 +88,16 @@ export function CotizacionConceptosEditForm(props) {
     { key: 2, text: 'Producto', value: 'Producto' },
     { key: 3, text: '<vacio>', value: '.' }
   ]
+
+  const handlePrecioChange = (e) => {
+    const rawValue = e.target.value;
+    const numericValue = parseCurrencyInput(rawValue)
+
+    setNewConcept((prev) => ({
+      ...prev,
+      precio: numericValue, 
+    }))
+  }
 
   return (
     <>
@@ -93,18 +109,31 @@ export function CotizacionConceptosEditForm(props) {
             <FormField error={!!errors.tipo}>
               <Label>Tipo</Label>
               <Dropdown
-                name="tipo"
-                placeholder='Seleccionar'
-                fluid
-                selection
-                options={opcionesSerprod}
-                value={newConcept.tipo}
-                onChange={handleChange}
-              />
+              placeholder="Seleccionar"
+              fluid
+              selection
+              options={opcionesSerprod}
+              value={newConcept.tipo}
+              onChange={(e, { value }) => {
+                if (value === '.') {
+                  setNewConcept((prev) => ({
+                    ...prev,
+                    tipo: value,
+                    concepto: '',
+                    precio: '',
+                    cantidad: '',
+                    total: 0
+                  }));
+                } else {
+                  setNewConcept((prev) => ({
+                    ...prev,
+                    tipo: value
+                  }));
+                }
+              }}
+            />
               {errors.tipo && <Message negative>{errors.tipo}</Message>}
             </FormField>
-
-            {/* Campo Concepto */}
             <FormField error={!!errors.concepto}>
               <Label>Concepto</Label>
               <Input
@@ -115,21 +144,17 @@ export function CotizacionConceptosEditForm(props) {
               />
               {errors.concepto && <Message negative>{errors.concepto}</Message>}
             </FormField>
-
-            {/* Campo Precio */}
             <FormField error={!!errors.precio}>
               <Label>Precio</Label>
               <Input
-                type="number"
+                type="text"
                 name="precio"
-                value={newConcept.precio}
-                onChange={handleChange}
-                disabled={newConcept.tipo === '.'}  // Desactivar si el tipo es "<vacio>"
+                value={formatCurrencyInput(newConcept.precio)}
+                onChange={handlePrecioChange}
+                disabled={newConcept.tipo === '.'}
               />
               {errors.precio && <Message negative>{errors.precio}</Message>}
             </FormField>
-
-            {/* Campo Cantidad */}
             <FormField error={!!errors.cantidad}>
               <Label>Qty</Label>
               <Input
@@ -137,20 +162,20 @@ export function CotizacionConceptosEditForm(props) {
                 name="cantidad"
                 value={newConcept.cantidad}
                 onChange={handleChange}
-                disabled={newConcept.tipo === '.'}  // Desactivar si el tipo es "<vacio>"
+                disabled={newConcept.tipo === '.'}
               />
               {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
+
+          <Button primary loading={isLoading} onClick={handleUpdateConcept}>
+            Guardar
+          </Button>
+
         </Form>
 
-        <Button primary onClick={handleUpdateConcept}>
-          Guardar
-        </Button>
+        <IconDel onOpenDel={() => onOpenCloseConfirm(newConcept)} />
 
-        <div className={styles.iconDel}>
-          <div><FaTrash onClick={() => onOpenCloseConfirm(newConcept)} /></div>
-        </div>
       </div>
     </>
   )

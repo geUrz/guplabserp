@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { serialize } from 'cookie'
-import {connection} from '@/libs/db'
+import connection from '@/libs/db'
 import bcrypt from 'bcrypt'
 
 export default async function loginHandler(req, res) {
@@ -29,8 +29,10 @@ export default async function loginHandler(req, res) {
         id: user.id,
         usuario: user.usuario,
         email: user.email,
+        nivel: user.nivel,
+        negocio_id: user.negocio_id
       },
-      'secret'
+      process.env.JWT_SECRET
     )
 
     const serialized = serialize('myToken', token, {

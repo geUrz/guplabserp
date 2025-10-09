@@ -1,3 +1,4 @@
+import styles from './CotizacionListSearch.module.css'
 import { map } from 'lodash'
 import { Loading } from '@/components/Layouts'
 import { BasicModal } from '@/layouts'
@@ -6,11 +7,10 @@ import { CotizacionDetalles } from '../CotizacionDetalles'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
 import { FaFileInvoice } from 'react-icons/fa'
-import styles from './CotizacionListSearch.module.css'
 
 export function CotizacionListSearch(props) {
 
-  const { reload, onReload, cotizaciones, onToastSuccessMod, onToastSuccessDel } = props
+  const { reload, onReload, cotizaciones, onToastSuccess, onToastSuccessDel } = props
 
   const [show, setShow] = useState(false)
   const [cotizacionSeleccionado, setCotizacionSeleccionado] = useState(null)
@@ -77,7 +77,7 @@ export function CotizacionListSearch(props) {
             cotizacion={cotizacionSeleccionado} 
             cotizacionId={cotizacionSeleccionado}
             onOpenClose={onOpenClose}
-            onToastSuccessMod={onToastSuccessMod}
+            onToastSuccess={onToastSuccess}
             onToastSuccessDel={onToastSuccessDel}
           />
         )}

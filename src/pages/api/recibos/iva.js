@@ -1,4 +1,4 @@
-import { connection } from "@/libs/db"; // Conexión a la base de datos
+import connection from "@/libs/db"; // Conexión a la base de datos
 
 export default async function handler(req, res) {
   const { id } = req.query;

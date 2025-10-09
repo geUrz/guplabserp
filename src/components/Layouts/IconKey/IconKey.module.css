@@ -1,0 +1,27 @@
+.main{
+  padding: 10px 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.section div{
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.section svg, .section path{
+  font-size: 20px;
+  color: var(--clrFont);
+  cursor: pointer;
+}

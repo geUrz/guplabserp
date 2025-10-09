@@ -1,14 +1,21 @@
 import { BiSolidFilePdf } from 'react-icons/bi'
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { formatDateIncDet, getValueOrDefault } from '@/helpers'
 import styles from './ReportePDF.module.css'
+import { useState } from 'react'
+import { Loading } from '@/components/Layouts'
 
 export function ReportePDF(props) {
   const { reporteData, firmaCli, firmaTec, toggleEvi, toggleEviAD, togglePagina2 } = props
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const generarPDF = async () => {
+
+    setIsLoading(true)
+
     if (!reporteData) return
 
     const doc = new jsPDF({
@@ -48,7 +55,7 @@ export function ReportePDF(props) {
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('CLICKNETMX', 15, 23)
+    doc.text('CLICKNET', 15, 23)
     doc.setFontSize(`${font2}`)
     doc.setTextColor(120, 120, 120)
     doc.text('Punta Este Corporativo', 15, 27)
@@ -60,7 +67,7 @@ export function ReportePDF(props) {
     doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('RFC: EIEJ8906244J3', 15, 47)
+    doc.text('RFC: EIEJ8906244J3', 15, 47)  
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
@@ -98,7 +105,7 @@ export function ReportePDF(props) {
       64
     )
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: 75,
       head: [
         [
@@ -186,7 +193,7 @@ export function ReportePDF(props) {
     if (togglePagina2) {
 
       doc.addPage()
-      doc.autoTable({
+      autoTable(doc, {
         startY: 10,
         head: [
           [
@@ -229,7 +236,7 @@ export function ReportePDF(props) {
       }
 
       doc.addPage()
-      doc.autoTable({
+      autoTable(doc, {
         startY: 10,
         head: [[{ content: 'Evidencias', styles: { halign: 'left' } }]],
         headStyles: { fillColor: [240, 240, 240], fontSize: font2, textColor: [50, 50, 50] },
@@ -288,7 +295,7 @@ export function ReportePDF(props) {
       }
 
       doc.addPage()
-      doc.autoTable({
+      autoTable(doc, {
         startY: 10,
         head: [[{ content: 'Evidencias Antes del Servicio', styles: { halign: 'left' } }]],
         headStyles: { fillColor: [240, 240, 240], fontSize: font2, textColor: [50, 50, 50] },
@@ -334,7 +341,7 @@ export function ReportePDF(props) {
       })
 
       doc.addPage()
-      doc.autoTable({
+      autoTable(doc, {
         startY: 10,
         head: [[{ content: 'Evidencias Después del Servicio', styles: { halign: 'left' } }]],
         headStyles: { fillColor: [240, 240, 240], fontSize: font2, textColor: [50, 50, 50] },
@@ -381,6 +388,9 @@ export function ReportePDF(props) {
     }
 
     doc.save(`reporte_${reporteData.folio}.pdf`)
+
+    setIsLoading(false)
+
   }
 
   const compartirPDF = () => {
@@ -388,10 +398,19 @@ export function ReportePDF(props) {
   }
 
   return (
+    
     <div className={styles.iconPDF}>
-      <div onClick={compartirPDF}>
-        <BiSolidFilePdf />
+      <div onClick={generarPDF}>
+        {isLoading ? (
+          <Loading 
+            size={30}
+            loading={3}
+          />
+        ) : (
+          <BiSolidFilePdf />
+        )}
       </div>
     </div>
+
   )
 }

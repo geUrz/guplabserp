@@ -1,10 +1,9 @@
-import { Confirm, IconClose, ToastSuccess } from '@/components/Layouts'
+import { AddCliente, Confirm, DatosOb, IconClose, IconPlus, RowHeadModal, ToastSuccess } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { formatCurrency, genCOTId } from '@/helpers'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { FaCheck, FaPlus, FaTimes } from 'react-icons/fa'
-import { RowHeadModal } from '../RowHead'
+import { FaPlus } from 'react-icons/fa'
 import styles from './CotizacionForm.module.css'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import { BasicModal } from '@/layouts'
@@ -32,21 +31,20 @@ const saveToggleIVA = async (value) => {
   const db = await openDB()
   const transaction = db.transaction('settings', 'readwrite')
   const store = transaction.objectStore('settings')
-  
+
   store.put({ toggleIVA: value }, 'toggleIVA')
-  
+
   transaction.oncomplete = () => {
   }
   transaction.onerror = (e) => {
   }
 }
 
-
 const getToggleIVA = async () => {
   const db = await openDB()
   const transaction = db.transaction('settings', 'readonly')
   const store = transaction.objectStore('settings')
-  
+
   return new Promise((resolve, reject) => {
     const request = store.get('toggleIVA')
     request.onsuccess = (e) => {
@@ -62,6 +60,8 @@ export function CotizacionForm(props) {
 
   const { reload, onReload, onOpenCloseForm, onToastSuccess } = props
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const [showConfirm, setShowConfirm] = useState(false)
 
   const [show, setShow] = useState(false)
@@ -76,9 +76,10 @@ export function CotizacionForm(props) {
   const [conceptoAEliminar, setConceptoAEliminar] = useState(null)
 
   const onOpenEditConcep = (index) => {
-    setConceptoEdit(conceptos[index])
+    setConceptoEdit({ ...conceptos[index], index })
     setShowEditConcep(true)
   }
+
 
   const onCloseEditConcep = () => {
     setConceptoEdit(null)
@@ -110,23 +111,23 @@ export function CotizacionForm(props) {
   const [conceptos, setConceptos] = useState([])
 
   const [toggleIVA, setToggleIVA] = useState(false)
-  
+
   useEffect(() => {
     const fetchToggleIVA = async () => {
       const storedToggleIVA = await getToggleIVA()
       setToggleIVA(storedToggleIVA)
     }
     fetchToggleIVA()
-  }, [])  
+  }, [])
 
   const onIVA = () => {
     setToggleIVA(prevState => {
       const newState = !prevState;
-      saveToggleIVA(newState) 
+      saveToggleIVA(newState)
       return newState;
     })
   }
-  
+
   const [ivaValue, setIvaValue] = useState(16)
 
   const [errors, setErrors] = useState({})
@@ -161,12 +162,14 @@ export function CotizacionForm(props) {
     fetchClientes()
   }, [reload])
 
-  const crearRecibo = async (e) => {
+  const crearCotizacion = async (e) => {
     e.preventDefault()
 
     if (!validarForm()) {
       return
     }
+
+    setIsLoading(true)
 
     const folio = genCOTId(4)
 
@@ -178,29 +181,38 @@ export function CotizacionForm(props) {
         iva: ivaValue
       })
       const cotizacionId = response.data.id
-      await Promise.all(conceptos.map(concepto =>
-        axios.post('/api/cotizaciones/conceptos', {
-          cotizacion_id: cotizacionId,
-          tipo: concepto.tipo,
-          concepto: concepto.concepto,
-          precio: concepto.precio,
-          cantidad: concepto.cantidad,
-          total: concepto.total
-        })
-      ))
 
-      await axios.post('/api/notificaciones',
-        {
-          title: 'Cotización creada',
-          body: `${cotizacion}`,
-          url: '/cotizaciones'
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
+      try {
+        await Promise.all(conceptos.map(concepto =>
+          axios.post('/api/cotizaciones/conceptos', {
+            cotizacion_id: cotizacionId,
+            tipo: concepto.tipo,
+            concepto: concepto.concepto,
+            precio: concepto.precio,
+            cantidad: concepto.cantidad,
+            total: concepto.total
+          })
+        ))
+      } catch (errorConceptos) {
+        console.error("Error al guardar conceptos:", errorConceptos)
+      }
+
+      try {
+        await axios.post('/api/notificaciones',
+          {
+            title: 'Cotización creada',
+            body: `${cotizacion}`,
+            url: '/cotizaciones'
           },
-        }
-      )
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+      } catch (errorNotif) {
+        console.warn("Notificación no enviada:", errorNotif)
+      }
 
       setCotizacion('')
       setCliente('')
@@ -210,8 +222,10 @@ export function CotizacionForm(props) {
       onOpenCloseForm()
       onToastSuccess()
     } catch (error) {
+      setIsLoading(false)
       console.error('Error al crear la cotizacion:', error)
-
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -224,7 +238,9 @@ export function CotizacionForm(props) {
     const nuevosConceptos = conceptos.filter((_, i) => i !== conceptoAEliminar)
     setConceptos(nuevosConceptos)
     setShowConfirm(false)
+    setShowEditConcep(false)
   }
+
 
   const calcularTotales = () => {
     const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
@@ -253,18 +269,18 @@ export function CotizacionForm(props) {
         <Form>
           <FormGroup widths='equal'>
             <FormField error={!!errors.cotizacion}>
-              <Label>Cotización</Label>
+              <Label>Cotización*</Label>
               <Input
                 type="text"
                 value={cotizacion}
                 onChange={(e) => setCotizacion(e.target.value)}
               />
-              {errors.cotizacion && <Message negative>{errors.cotizacion}</Message>}
+              {errors.cotizacion && <Message>{errors.cotizacion}</Message>}
             </FormField>
           </FormGroup>
         </Form>
         <FormField error={!!errors.cliente_id}>
-          <Label>Cliente</Label>
+          <Label>Cliente*</Label>
           <Dropdown
             placeholder='Seleccionar'
             fluid
@@ -277,11 +293,10 @@ export function CotizacionForm(props) {
             value={cliente_id}
             onChange={(e, { value }) => setCliente(value)}
           />
-          <div className={styles.addCliente}>
-            <h1>Crear cliente</h1>
-            <FaPlus onClick={onOpenCloseClienteForm} />
-          </div>
-          {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
+          
+          <AddCliente onOpenCloseClienteForm={onOpenCloseClienteForm} />
+
+          {errors.cliente_id && <Message>{errors.cliente_id}</Message>}
         </FormField>
 
         <div className={styles.section}>
@@ -292,17 +307,24 @@ export function CotizacionForm(props) {
             <div key={index} className={styles.rowMap} onClick={() => onOpenEditConcep(index)}>
               <h1>{concepto.tipo}</h1>
               <h1>{concepto.concepto}</h1>
-              <h1>${formatCurrency(concepto.precio * 1)}</h1>
-              <h1>{concepto.cantidad}</h1>
-              <h1>${formatCurrency(concepto.precio * concepto.cantidad)}</h1>
+
+              {concepto.tipo !== '.' ? (
+                <>
+                  <h1>{formatCurrency(concepto.precio)}</h1>
+                  <h1>{concepto.cantidad}</h1>
+                  <h1>{formatCurrency(concepto.total)}</h1>
+                </>
+              ) : (
+                <>
+                  <h1></h1>
+                  <h1></h1>
+                  <h1></h1>
+                </>
+              )}
             </div>
           ))}
 
-          <div className={styles.iconPlus}>
-            <div onClick={onOpenCloseConcep}>
-              <FaPlus />
-            </div>
-          </div>
+          <IconPlus onOpenCloseConcep={onOpenCloseConcep} />
 
           <div className={styles.sectionTotal}>
             <div className={styles.sectionTotal_1}>
@@ -336,7 +358,7 @@ export function CotizacionForm(props) {
             </div>
 
             <div className={styles.sectionTotal_2}>
-              
+
               {!toggleIVA ? (
                 <>
                   <h1>-</h1>
@@ -344,21 +366,23 @@ export function CotizacionForm(props) {
                 </>
               ) : (
                 <>
-                  <h1>${formatCurrency(subtotal)}</h1>
-                  <h1>${formatCurrency(iva)}</h1>
+                  <h1>{formatCurrency(subtotal)}</h1>
+                  <h1>{formatCurrency(iva)}</h1>
                 </>
               )}
 
               {!toggleIVA ? (
-                <h1>${formatCurrency(subtotal)}</h1>
+                <h1>{formatCurrency(subtotal)}</h1>
               ) : (
-                <h1>${formatCurrency(total)}</h1>
+                <h1>{formatCurrency(total)}</h1>
               )}
             </div>
           </div>
         </div>
 
-        <Button primary onClick={crearRecibo}>Crear</Button>
+        <Button primary loading={isLoading} onClick={crearCotizacion}>Crear</Button>
+
+        <DatosOb />
 
       </div>
 
@@ -370,15 +394,14 @@ export function CotizacionForm(props) {
         <ConceptosForm añadirConcepto={añadirConcepto} onOpenCloseConcep={onOpenCloseConcep} />
       </BasicModal>
 
-      <BasicModal title="Editar concepto" show={showEditConcep} onClose={onOpenEditConcep}>
+      <BasicModal title="Modificar concepto" show={showEditConcep} onClose={onOpenEditConcep}>
         <ConceptosEditForm
           concepto={conceptoEdit}
           onSave={(updatedConcepto) => {
-
-            const updatedConceptos = conceptos.map((concepto) =>
-              concepto === conceptoEdit ? updatedConcepto : concepto
-            )
+            const updatedConceptos = [...conceptos]
+            updatedConceptos[updatedConcepto.index] = updatedConcepto
             setConceptos(updatedConceptos)
+            setShowEditConcep(false)
           }}
           onCloseEditConcep={onCloseEditConcep}
           onOpenCloseConfirm={onOpenCloseConfirm}
@@ -387,16 +410,6 @@ export function CotizacionForm(props) {
 
       <Confirm
         open={showConfirm}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={eliminarConcepto}
         onCancel={onHideConfirm}
         content='¿Estás seguro de eliminar el concepto?'

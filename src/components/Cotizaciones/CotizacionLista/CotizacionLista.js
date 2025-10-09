@@ -3,14 +3,14 @@ import { map, size } from 'lodash'
 import axios from 'axios'
 import { ListEmpty, Loading, ToastSuccess } from '@/components/Layouts'
 import { FaFileContract } from 'react-icons/fa'
-import {  formatDateIncDet, getValueOrDefault } from '@/helpers'
+import { getValueOrDefault } from '@/helpers'
 import { BasicModal } from '@/layouts'
 import { CotizacionDetalles } from '../CotizacionDetalles'
 import styles from './CotizacionLista.module.css'
 
 export function CotizacionLista(props) {
 
-  const { reload, onReload, cotizaciones, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { reload, onReload, cotizaciones, onToastSuccess, onToastSuccessDel } = props
 
   const [show, setShow] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -107,7 +107,7 @@ export function CotizacionLista(props) {
       )}
 
       <BasicModal title='detalles de la cotización' show={show} onClose={onOpenClose}>
-        <CotizacionDetalles cotizacion={cotizacionSeleccionado} cotizacionId={cotizacionSeleccionado} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onOpenClose={onOpenClose} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onDeleteConcept={onDeleteConcept} cotizacionSeleccionado={setCotizacionSeleccionado} />
+        <CotizacionDetalles cotizacion={cotizacionSeleccionado} cotizacionId={cotizacionSeleccionado} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onOpenClose={onOpenClose} onToastSuccess={onToastSuccess}  onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onDeleteConcept={onDeleteConcept} cotizacionSeleccionado={setCotizacionSeleccionado} />
       </BasicModal>
 
     </>

@@ -7,11 +7,13 @@ import styles from './ReciboEditForm.module.css'
 import { FaPlus } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteForm } from '@/components/Clientes'
-import { ToastSuccess } from '@/components/Layouts'
+import { AddCliente, ToastSuccess } from '@/components/Layouts'
 
 export function ReciboEditForm(props) {
 
   const { reload, onReload, reciboData, actualizarRecibo, onOpenEditRecibo, onToastSuccessMod } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [show, setShow] = useState(false)
 
@@ -73,6 +75,8 @@ export function ReciboEditForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     try {
       await axios.put(`/api/recibos/recibos?id=${reciboData.id}`, {
         ...formData,
@@ -83,7 +87,10 @@ export function ReciboEditForm(props) {
       onOpenEditRecibo()
       onToastSuccessMod()
     } catch (error) {
-      console.error('Error actualizando el recibo:', error)
+      setIsLoading(false)
+      console.error('Error al modificar el recibo:', error)
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -133,14 +140,13 @@ export function ReciboEditForm(props) {
               value={formData.cliente_id}
               onChange={handleDropdownChange}
             />
-            <div className={styles.addCliente} onClick={onOpenCloseClienteForm}>
-              <h1>Crear cliente</h1>
-              <FaPlus />
-            </div>
+            
+            <AddCliente onOpenCloseClienteForm={onOpenCloseClienteForm} />
+
             {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
           </FormField>
         </FormGroup>
-        <Button primary onClick={handleSubmit}>
+        <Button primary loading={isLoading} onClick={handleSubmit}>
           Guardar
         </Button>
       </Form>

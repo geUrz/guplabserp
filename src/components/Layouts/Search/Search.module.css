@@ -1,0 +1,42 @@
+.iconSearchMain{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconSearch{
+  width: 220px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+} 
+
+.iconSearch h1{
+  margin-right: 10px;
+  font-size: 16px;
+  color: var(--clrFont);
+} 
+
+.iconSearch svg, .iconSearch path{
+  font-size: 24px;
+  color: var(--clrFont);
+  cursor: pointer;
+} 
+
+.searchMain {
+  padding-top: 10px;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: fixed;
+  top: 0px;
+  left: 0;
+  background-color: var(--bgSearch);
+  z-index: 1000;
+}

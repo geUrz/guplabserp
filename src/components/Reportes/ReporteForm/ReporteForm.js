@@ -9,12 +9,14 @@ import styles from './ReporteForm.module.css'
 import { BasicModal } from '@/layouts'
 import { ClienteForm } from '@/components/Clientes'
 import { FaPlus } from 'react-icons/fa'
-import { ToastSuccess } from '@/components/Layouts'
+import { AddCliente, ToastSuccess } from '@/components/Layouts'
 
 
 export function ReporteForm(props) {
 
   const { user } = useAuth()
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [clientes, setClientes] = useState([])
   const [cliente_id, setCliente] = useState('')
@@ -85,6 +87,8 @@ export function ReporteForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     const folio = genRepId(4)
 
     try {
@@ -120,9 +124,11 @@ export function ReporteForm(props) {
       onToastSuccess()
 
     } catch (error) {
-      console.error('Error al crear la reporte:', error)
+      setIsLoading(false)
+      console.error('Error al crear el reporte:', error)
+    } finally {
+        setIsLoading(false)
     }
-
   }
 
   return (
@@ -149,12 +155,12 @@ export function ReporteForm(props) {
                   value={reporte}
                   onChange={handleReporteChange}
                 />
-                {errors.reporte && <Message negative>{errors.reporte}</Message>}
+                {errors.reporte && <Message>{errors.reporte}</Message>}
               </FormField>
               <FormField error={!!errors.cliente_id}>
                 <Label>Cliente</Label>
                 <Dropdown
-                  placeholder='Selecciona un cliente'
+                  placeholder='Seleccionar'
                   fluid
                   selection
                   options={clientes.map(cliente => ({
@@ -165,11 +171,10 @@ export function ReporteForm(props) {
                   value={cliente_id}
                   onChange={(e, { value }) => setCliente(value)}
                 />
-                <div className={styles.addCliente}>
-                  <h1>Crear cliente</h1>
-                  <FaPlus onClick={onOpenCloseClienteForm} />
-                </div>
-                {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
+                
+                <AddCliente onOpenCloseClienteForm={onOpenCloseClienteForm} />
+
+                {errors.cliente_id && <Message>{errors.cliente_id}</Message>}
               </FormField>
               <FormField error={!!errors.descripcion}>
                 <Label>
@@ -181,11 +186,12 @@ export function ReporteForm(props) {
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                 />
-                {errors.descripcion && <Message negative>{errors.descripcion}</Message>}
+                {errors.descripcion && <Message>{errors.descripcion}</Message>}
               </FormField>
             </FormGroup>
             <Button
               primary
+              loading={isLoading}
               onClick={crearReporte}
             >
               Crear

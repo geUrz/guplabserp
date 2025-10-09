@@ -6,7 +6,7 @@ import styles from './ReciboConceptosForm.module.css'
 
 export function ReciboConceptosForm(props) {
 
-  const { reload, onReload, reciboId, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
+  const { reload, onReload, reciboId, onAddConcept, onOpenCloseConcep} = props
 
   const [newConcept, setNewConcept] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
@@ -98,7 +98,7 @@ export function ReciboConceptosForm(props) {
               <Label>Tipo</Label>
               <Dropdown
                 name="tipo"
-                placeholder='Selecciona una opción'
+                placeholder='Seleccionar'
                 fluid
                 selection
                 options={opcionesSerprod}
@@ -138,11 +138,10 @@ export function ReciboConceptosForm(props) {
               {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
-        </Form>
-
-        <Button primary onClick={handleAddConcept}>
-          Agregar concepto
+          <Button primary onClick={handleAddConcept}>
+            Añadir
         </Button>
+        </Form>
 
       </div>
 

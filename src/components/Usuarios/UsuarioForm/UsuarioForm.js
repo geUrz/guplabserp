@@ -185,8 +185,10 @@ export function UsuarioForm(props) {
                   fluid
                   selection
                   options={[
-                    { key: 'Admin', text: 'Admin', value: 'Admin' },
-                    { key: 'Técnico', text: 'Técnico', value: 'Técnico' },
+                    { key: 'admin', text: 'admin', value: 'admin' },
+                    { key: 'usuariosu', text: 'usuariosu', value: 'usuariosu' },
+                    { key: 'usuario', text: 'usuario', value: 'usuario' },
+                    { key: 'técnico', text: 'técnico', value: 'técnico' }
                   ]}
                   name='nivel'
                   value={credentials.nivel}

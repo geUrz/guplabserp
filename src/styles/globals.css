@@ -18,17 +18,17 @@
   margin: 0;
   font-family: 'Mulish' !important;
   font-weight: 200 !important;
-  color: rgb(175, 175, 175);
   cursor: default;
 }
 
 body{
-  background-color: var(--bg0) !important;
+  background-color: var(--bgBody) !important;
 }
 
 h1,h2,h3,h4{
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
+  color: var(--clrFont);
 }
 
 li.slick-active{

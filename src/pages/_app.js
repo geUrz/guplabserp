@@ -1,8 +1,11 @@
-import { AuthProvider } from '@/contexts/AuthContext'
+
+import { AuthProvider, ThemeProvider } from '@/contexts'
 import 'semantic-ui-css/semantic.min.css'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import '@/styles/globals.css'
 import { useEffect } from 'react'
+import { Provider } from 'react-redux'
+import { store } from '@/store'
+import '@/styles/globals.css'
 
 export default function App(props) {
   const { Component, pageProps } = props
@@ -28,10 +31,7 @@ export default function App(props) {
       const registration = await navigator.serviceWorker.register('/service-worker.js');
       console.log('Service Worker registrado con éxito:', registration);
 
-      const readyRegistration = await navigator.serviceWorker.ready; 
-      console.log('Service Worker está listo:', readyRegistration);
-
-      const subscription = await readyRegistration.pushManager.subscribe({
+      const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
       });
@@ -58,24 +58,16 @@ export default function App(props) {
   };
 
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(registration => {
-          console.log('Service Worker registrado con éxito:', registration);
-        })
-        .catch(error => {
-          console.error('Error al registrar el Service Worker:', error);
-        });
-    } else {
-      console.warn('Service Workers no son compatibles en este navegador.');
-    }
-
     requestNotificationPermission();
-  }, [])
+  }, []);
 
   return (
-    <AuthProvider>
-      <Component {...pageProps} />
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <ThemeProvider>
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </AuthProvider>
+    </Provider>
   )
 }

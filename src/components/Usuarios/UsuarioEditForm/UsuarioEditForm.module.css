@@ -1,55 +1,34 @@
-.iconClose{
-  width: 28px;
-  height: 28px;
+.main{
+  width: 100%;
+  height: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  border-radius: 50%;
-  cursor: pointer;
 }
 
-.iconClose:hover{
-  background-color: var(--clrGR0);
+.section{
+  width: 100%;
+  height: auto;
 }
 
-.iconClose:active{
-  background-color: var(--clrGR1);
-}
-
-.iconClose svg, .iconClose path{
-  font-size: 18px;
-  color: var(--clrBL2);
-  cursor: pointer;
-}
-
-.iconCheck{
-  width: 50px;
-  height: 50px;
+.addNegocio{
+  padding-left: 5px;
+  margin-top: 10px;
+  width: 100%;
+  height: auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+}
+
+.addNegocio h1{
+  font-size: 11.5px;
+  color: var(--bgBtnN);
+}
+
+.addNegocio svg, .addNegocio path{
+  margin-left: 5px;
+  color: var(--bgBtnN);
   cursor: pointer;
-}
-
-.iconCheck:hover{
-  background-color: var(--clrGR0);
-}
-
-.iconCheck:active{
-  background-color: var(--clrGR1);
-}
-
-.iconCheck svg, .iconCheck path{
-  font-size: 24px;
-  color: var(--clrBL2);
-  cursor: pointer;
-}
-
-.error{
-  margin-top: 5px;
-  font-size: 12px;
-  color: red;
 }

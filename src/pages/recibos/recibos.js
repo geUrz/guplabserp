@@ -1,17 +1,21 @@
+import styles from './recibos.module.css'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
-import axios from 'axios'
-import { FaSearch } from 'react-icons/fa'
+import { Add, ErrorAccesso, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { ReciboForm, RecibosLista, RecibosListSearch, SearchRecibos } from '@/components/Recibos'
-import styles from './recibos.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchRecibos } from '@/store/recibos/reciboSlice'
+import { selectReciboError } from '@/store/recibos/reciboSelectors'
+import { usePermissions } from '@/hooks'
 
 export default function Recibos() {
 
   const { user, loading } = useAuth()
 
+  const {isAdmin, isSuperUser} = usePermissions()
+ 
   const [reload, setReload] = useState(false)
 
   const onReload = () => setReload((prevState) => !prevState)
@@ -26,34 +30,33 @@ export default function Recibos() {
 
   const [resultados, setResultados] = useState([])
 
-  const [recibos, setRecibos] = useState(null)
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const error = useSelector(selectReciboError)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get('/api/recibos/recibos')
-        setRecibos(res.data)
-      } catch (error) {
-        console.error(error)
+      if (error) {
+        setApiError(error)
+        setErrorModalOpen(true)  
       }
-    })()
-  }, [reload, user])
+    }, [error])
+
+  useEffect(() => {
+    if (!user) return
+      dispatch(fetchRecibos(user))
+  }, [dispatch, reload, user])
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
-  const [toastSuccessMod, setToastSuccessReportesMod] = useState(false)
   const [toastSuccessDel, setToastSuccessReportesDel] = useState(false)
 
   const onToastSuccess = () => {
     setToastSuccessReportes(true)
     setTimeout(() => {
       setToastSuccessReportes(false)
-    }, 3000)
-  }
-
-  const onToastSuccessMod = () => {
-    setToastSuccessReportesMod(true)
-    setTimeout(() => {
-      setToastSuccessReportesMod(false)
     }, 3000)
   }
 
@@ -78,41 +81,37 @@ export default function Recibos() {
 
         <Title title='Recibos' />
 
-        {toastSuccess && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccessReportes(false)} />}
+        {toastSuccess && <ToastSuccess onClose={() => setToastSuccessReportes(false)} />}
 
-        {toastSuccessMod && <ToastSuccess contain='Modificado exitosamente' onClose={() => setToastSuccessReportesMod(false)} />}
+        {toastSuccessDel && <ToastDelete onClose={() => setToastSuccessReportesDel(false)} />}
 
-        {toastSuccessDel && <ToastDelete contain='Eliminado exitosamente' onClose={() => setToastSuccessReportesDel(false)} />}
+        <Search
+          title='recibo'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          user={user}
+          reload={reload}
+          onReload={onReload}
+          isAdmin={isAdmin} 
+          isSuperUser={isSuperUser}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchRecibos}
+          SearchListComponent={RecibosListSearch}
+          onToastSuccess={onToastSuccess}
+        />
 
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchRecibos onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <RecibosListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
-
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar recibo</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
-
-        <RecibosLista user={user} loading={loading} reload={reload} onReload={onReload} recibos={recibos} setRecibos={setRecibos} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <RecibosLista user={user} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
       <BasicModal title='crear recibo' show={openForm} onClose={onOpenCloseForm}>
         <ReciboForm reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
       </BasicModal>
+
+      {/* <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
+      </BasicModal> */}
 
     </ProtectedRoute>
 

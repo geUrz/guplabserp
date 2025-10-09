@@ -7,7 +7,7 @@ import styles from './SearchClientes.module.css';
 
 export function SearchClientes(props) {
 
-  const {reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod} = props
+  const {isAdmin, isSuperUser, reload, onReload, onResults, onOpenCloseSearch, onToastSuccess} = props
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
@@ -59,7 +59,7 @@ export function SearchClientes(props) {
         {error && <p>{error}</p>}
         {clientes.length > 0 && (
           <div className={styles.resultsContainer}>
-            <ClientesListSearch clientes={clientes} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <ClientesListSearch isAdmin={isAdmin} isSuperUser={isSuperUser} clientes={clientes} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
           </div>
         )}
       </div>

@@ -5,12 +5,14 @@ import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message, Te
 import styles from './ReporteEditForm.module.css'
 import { BasicModal } from '@/layouts'
 import { ClienteForm } from '@/components/Clientes'
-import { ToastSuccess } from '@/components/Layouts'
+import { AddCliente, ToastSuccess } from '@/components/Layouts'
 import { FaPlus } from 'react-icons/fa'
 
 export function ReporteEditForm(props) {
 
   const { reload, onReload, reporteData, actualizarReporte, onOpenEditReporte, onToastSuccessMod } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [show, setShow] = useState(false)
 
@@ -87,6 +89,8 @@ export function ReporteEditForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     try {
       await axios.put(`/api/reportes/reportes?id=${reporteData.id}`, {
         ...formData
@@ -97,7 +101,10 @@ export function ReporteEditForm(props) {
       onOpenEditReporte()
       onToastSuccessMod()
     } catch (error) {
-      console.error('Error actualizando el reporte:', error)
+      setIsLoading(false)
+      console.error('Error al modificar el reporte:', error)
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -137,10 +144,9 @@ export function ReporteEditForm(props) {
               value={formData.cliente_id}
               onChange={handleDropdownChange}
             />
-            <div className={styles.addCliente} onClick={onOpenCloseClienteForm}>
-              <h1>Crear cliente</h1>
-              <FaPlus />
-            </div>
+            
+            <AddCliente onOpenCloseClienteForm={onOpenCloseClienteForm} />
+
             {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
           </FormField>
           <FormField error={!!errors.descripcion}>
@@ -155,7 +161,7 @@ export function ReporteEditForm(props) {
             {errors.descripcion && <Message negative>{errors.descripcion}</Message>}
           </FormField>
         </FormGroup>
-        <Button primary onClick={handleSubmit}>
+        <Button primary loading={isLoading} onClick={handleSubmit}>
           Guardar
         </Button>
       </Form>

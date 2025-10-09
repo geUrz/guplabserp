@@ -24,26 +24,29 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg1);
+  background-color: var(--bgBox0);
+  border-radius: 10%;
   cursor: pointer;
 }
 
 .boxContainer:hover{
-  background-color: var(--clr0);
+  background-color: var(--bgBox1);
+}
+
+.boxContainer:active{
+  background-color: var(--bgBox2);
 }
 
 .boxContainer svg, .boxContainer path{
-  font-size: 45px;
+  font-size: 38px;
+  color: var(--bgBoxFont);
   cursor: pointer;
-}
-
-.boxContainer:hover svg, .boxContainer:hover path, .boxContainer:hover h1{
-  color: azure;
 }
 
 .boxContainer h1{
   margin-top: 20px !important;
-  font-size: 18px;
+  font-size: 16px;
   font-family: 'Bebas' !important;
+  color: var(--bgBoxFont);
   cursor: pointer;
 }

@@ -4,14 +4,16 @@ import axios from 'axios'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { BasicModal } from '@/layouts'
 import { FaPlus } from 'react-icons/fa'
-import { ToastSuccess } from '@/components/Layouts'
+import { AddCliente, ToastSuccess } from '@/components/Layouts'
 import 'react-datepicker/dist/react-datepicker.css'
 import styles from './CotizacionEditForm.module.css'
 import { ClienteForm } from '@/components/Clientes'
 
 export function CotizacionEditForm(props) {
 
-  const { reload, onReload, cotizacionData, actualizarCotizacion, onOpenEditCotizacion, onToastSuccessMod } = props
+  const { reload, onReload, cotizacionData, actualizarCotizacion, onOpenEditCotizacion, onToastSuccess } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [show, setShow] = useState(false)
 
@@ -82,6 +84,8 @@ export function CotizacionEditForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     try {
       await axios.put(`/api/cotizaciones/cotizaciones?id=${cotizacionData.id}`, {
         ...formData,
@@ -90,9 +94,11 @@ export function CotizacionEditForm(props) {
       onReload()
       actualizarCotizacion({ ...formData, cliente_nombre: clienteNombre })
       onOpenEditCotizacion()
-      onToastSuccessMod()
+      onToastSuccess()
     } catch (error) {
       console.error('Error actualizando la cotizacion:', error)
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -121,7 +127,7 @@ export function CotizacionEditForm(props) {
           <FormField error={!!errors.cliente_id}>
             <Label>Cliente</Label>
             <Dropdown
-              placeholder='Selecciona un cliente'
+              placeholder='Seleccionar'
               fluid
               selection
               options={clientes.map(cliente => ({
@@ -132,14 +138,13 @@ export function CotizacionEditForm(props) {
               value={formData.cliente_id}
               onChange={handleDropdownChange}
             />
-            <div className={styles.addCliente} onClick={onOpenCloseClienteForm}>
-              <h1>Crear cliente</h1>
-              <FaPlus />
-            </div>
+            
+            <AddCliente onOpenCloseClienteForm={onOpenCloseClienteForm} />
+
             {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
           </FormField>
         </FormGroup>
-        <Button primary onClick={handleSubmit}>
+        <Button primary loading={isLoading} onClick={handleSubmit}>
           Guardar
         </Button>
       </Form>

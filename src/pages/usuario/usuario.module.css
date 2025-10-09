@@ -1,12 +1,14 @@
 .main{
+  padding-bottom: 100px;
   width: 100%;
-  height: 60vh;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .section{
+  padding: 30px 0 80px 0;
   width: 100%;
   height: auto;
   display: flex;
@@ -17,17 +19,44 @@
 
 .section svg, .section path{
   font-size: 80px;
+  color: var(--clrGlobalG);
 }
 
-.section h1{
-  margin-top: 5px;
+.datos_usuario{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.datos_usuario div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.datos_usuario h1{
+  margin-top: 8px !important;
   font-size: 24px;
-  color: var(--clr2);
+  color: var(--clrGlobalN);
 }
 
-.section h2{
+.datos_usuario h2, .datos_usuario h3{
+  margin-top: 4px !important;
+  font-size: 15px;
+  color: var(--clrGlobalG);
+}
+
+.datos_usuario h2{
+  margin-right: 4px !important;
+  color: var(--clrGlobalN);
+}
+
+.datos_usuario svg, .datos_usuario path{
   margin-top: 5px;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .iconEdit{
@@ -45,25 +74,94 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg2);
+  background-color: var(--bgBtnN);
   border-radius: 50%;
   cursor: pointer;
 }
 
 .iconEdit svg, .iconEdit path{
-  color: var(--clr2);
+  font-size: 20px;
+  color: azure;
+  cursor: pointer;
 }
 
 .iconEdit div:hover{
-  background-color: var(--bg3);
+  background-color: var(--bgBtnN1);
 }
 
 .iconEdit div:active{
-  background-color: var(--bg4);
+  background-color: var(--bgBtnN2);
 }
 
-.iconEdit svg, .iconEdit path{
-  font-size: 20px;
-  color: var(--clr0);
+.datos_pdf{
+  padding: 0 10px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.datos_pdf h1{
+  font-size: 24px;
+  color: var(--clrGlobalG);
+}
+
+.datos_pdf div{
+  margin-top: 10px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.datos_pdf div h1{
+  font-size: 16px;
+  color: var(--clrGlobalN);
+}
+
+.datos_pdf div h2{
+  margin: 2px 0 10px 0 !important;
+  font-size: 14px;
+  text-align: center;
+  color: var(--clrGlobalG);
+}
+
+.datos_pdf img{
+  margin-top: 10px;
+  width: 250px;
   cursor: pointer;
+}
+
+.datos_pdf svg, .datos_pdf path{
+  margin-top: 10px;
+  font-size: 60px;
+  cursor: pointer;
+}
+
+.footer{
+  margin-top: 100px;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer div{
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer h1{
+  font-size: 14px;
+  color: var(--clrGlobalG);
+  font-weight: 600 !important;
 }

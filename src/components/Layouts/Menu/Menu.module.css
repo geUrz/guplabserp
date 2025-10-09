@@ -7,7 +7,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: var(--bg1);
+  background-color: var(--bgMenuTop);
   z-index: 1000;
 }
 
@@ -24,6 +24,7 @@
 
 .iconBar svg, .iconBar path{
   font-size: 32px;
+  color: var(--clrFont);
   cursor: pointer;
 }
 
@@ -34,7 +35,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(10, 10, 10, .95);
+  background-color: var(--bgMenuSide0);
   transition: all .2s;
   z-index: 10000;
 }
@@ -50,11 +51,16 @@
 }
 
 .menuTop:hover{
-  background-color: var(--clr0);
+  background-color: var(--bgBox1);
+}
+
+.menuTop:active{
+  background-color: var(--bgBox2);
 }
 
 .menuTop svg, .menuTop path{
   font-size: 50px;
+  color: var(--clrFont);
   cursor: pointer;
 }
 
@@ -66,14 +72,10 @@
   cursor: pointer;
 }
 
-.menuTop:hover h1, .menuTop:hover svg, .menuTop:hover path{
-  color: azure;
-}
-
 .menuTop h1{
   margin-top: 10px !important;
   font-size: 20px;
-  color: var(--clr2);
+  color: var(--clrFont);
   cursor: pointer;
 }
 
@@ -88,20 +90,48 @@
 }
 
 .menuList a:hover{
-  background-color: var(--clr0);
+  background-color: var(--bgBox1);
+}
+
+.menuList a:active{
+  background-color: var(--bgBox2);
 }
 
 .menuList svg, .menuList path, .menuList h1{
   font-size: 20px;
+  color: var(--clrFont);
   cursor: pointer;
 }
 
 .menuList h1{
-  font-size: 14px;
   margin-left: 5px !important;
+  font-size: 14px;
+  color: var(--clrFont);
 }
 
-.menuList a:hover h1, .menuList a:hover svg, .menuList a:hover path{
-  color: azure;
+.toggleTheme{
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleTheme div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconThemeSun svg, .iconThemeSun path, .iconThemeMoon svg, .iconThemeMoon path{
+  font-size: 34px;
+  cursor: pointer;
+}
+
+.iconThemeMoon svg, .iconThemeMoon path{
+  color: var(--clrFont);
+}
+
+.iconThemeSun svg, .iconThemeSun path{
+  color: var(--bgBtnN);
 }
 

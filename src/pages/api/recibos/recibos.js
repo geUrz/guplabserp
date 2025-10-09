@@ -1,72 +1,80 @@
-import {connection} from "@/libs/db";
+import connection from "@/libs/db"
+import authMiddleware from "@/middleware/authMiddleware";
 
-export default async function handler(req, res) {
-    const { id, search } = req.query; // Se añade `id` para la búsqueda por ID
+export async function handler(req, res) {
+
+    const user = req.user
+    if (!user) return
+
+    const { id, negocio_id, search } = req.query;
+    const isAdmin = user?.nivel === 'admin'
+    const isUsuarioSu = user?.nivel === 'usuariosu'
+    const isUsuario = user?.nivel === 'usuario'
+    const negocioSolicitado = Number(negocio_id)
+    const negocioId = Number(user?.negocio_id)
+    
+    if (isUsuario) {
+        return res.status(403).json({ error: 'No tienes permiso para accesar' });
+    } 
 
     if (req.method === 'GET') {
 
         if (id) {
-            try {
-                const [rows] = await connection.query(`
-                SELECT 
-                    id,
-                    usuario_id,
-                    folio,
-                    cliente_id,
-                    recibo,
-                    nota,
-                    folioref,
-                    iva,
-                    createdAt
-                FROM recibos 
-                WHERE id = ?
-                ORDER BY updatedAt DESC`, [id]);
+            const [rows] = await connection.query(`SELECT * FROM recibos WHERE id = ?`, [id]);
+            const recibo = rows[0];
 
-                res.status(200).json(rows[0]); // Devolver el evento con los datos del cliente
-
-            } catch (error) {
-                res.status(500).json({ error: error.message });
-            }
-            return;
+            return res.status(200).json(recibo);
         }
 
         if (search) {
-            const searchQuery = `%${search.toLowerCase()}%`;
-            try {
-                const [rows] = await connection.query(`
-                    SELECT
-                        recibos.id, 
-                        recibos.usuario_id, 
-                        recibos.folio, 
-                        recibos.cliente_id, 
-                        clientes.nombre AS cliente_nombre,  
-                        clientes.contacto AS cliente_contacto, 
-                        recibos.recibo,
-                        recibos.nota,  
-                        recibos.folioref,
-                        recibos.iva,
-                        conceptosrec.concepto AS concepto,
-                        recibos.createdAt
-                    FROM recibos
-                    JOIN clientes ON recibos.cliente_id = clientes.id
-                    LEFT JOIN conceptosrec ON recibos.id = conceptosrec.recibo_id
-                    WHERE 
-                        LOWER(recibos.folio) LIKE ? 
-                    OR 
-                        LOWER(clientes.nombre) LIKE ?
-                    OR 
-                        LOWER(clientes.contacto) LIKE ?
-                    OR 
-                        LOWER(recibos.recibo) LIKE ?
-                    OR 
-                        LOWER(recibos.nota) LIKE ?
-                    OR 
-                        LOWER(recibos.createdAt) LIKE ?  
-                    OR 
-                        LOWER(conceptosrec.concepto) LIKE ?
-                    ORDER BY recibos.updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]);
+            const searchQuery = `%${search.toLowerCase()}%`
 
-                res.status(200).json(rows); // Devolver los recibos encontrados por búsqueda
+            try {
+
+                const whereClauses = [
+                    "LOWER(r.folio) LIKE ?",
+                    "LOWER(r.folioref) LIKE ?",
+                    "LOWER(r.recibo) LIKE ?",
+                    "LOWER(r.cliente_nombre) LIKE ?",
+                    "LOWER(r.cliente_contacto) LIKE ?",
+                    "LOWER(r.nota) LIKE ?",
+                    "LOWER(r.conceptosrec.concepto) LIKE ?"
+                ]
+
+                const params = [
+                    searchQuery, searchQuery, searchQuery, searchQuery,
+                    searchQuery, searchQuery, searchQuery
+                ]
+
+                if (!isAdmin && negocioId) {
+                    whereClause += ` AND u.negocio_id = ?`;
+                    params.push(negocioId);
+                }
+
+                const query = `
+                SELECT  
+                  r.id,
+                  r.folio, 
+                  r.folioref, 
+                  r.usuario_id, 
+                  r.cliente_id, 
+                  r.cliente_nombre,
+                  r.cliente_contacto,
+                  r.negocio_id,
+                  r.negocio_nombre,
+                  r.recibo,
+                  r.nota,
+                  r.iva,
+                  r.conceptosrec.concepto,
+                  r.createdAt
+                FROM usuarios u
+                LEFT JOIN negocios n ON u.negocio_id = n.id
+                 WHERE ${whereClause}
+                 ORDER BY u.updatedAt DESC
+              `;
+
+                const [rows] = await connection.query(query, params);
+                return res.status(200).json(rows)
 
             } catch (error) {
                 res.status(500).json({ error: 'Error al realizar la búsqueda' });
@@ -77,28 +85,28 @@ export default async function handler(req, res) {
         try {
             const [rows] = await connection.query(`
                 SELECT 
-                  recibos.id, 
-                  recibos.usuario_id, 
-                  recibos.folio, 
-                  recibos.cliente_id,  
-                  clientes.nombre AS cliente_nombre, 
-                  clientes.contacto AS cliente_contacto, 
-                  recibos.recibo,
-                  recibos.nota,  
-                  recibos.folioref,
-                  recibos.iva,
-                  recibos.createdAt
+                  r.id, 
+                  r.usuario_id, 
+                  r.folio, 
+                  r.cliente_id, 
+                  r.cliente_nombre,
+                  r.cliente_contacto,
+                  r.recibo,
+                  r.nota,  
+                  r.folioref,
+                  r.iva,
+                  r.createdAt
                 FROM recibos
                 JOIN clientes ON recibos.cliente_id = clientes.id
                 ORDER BY recibos.updatedAt DESC`);
 
-            res.status(200).json(rows); // Devolver todos los recibos con los datos de los clientes
+            res.status(200).json(rows)
 
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
     } else if (req.method === 'POST') {
-        // Maneja la solicitud POST
+
         const { usuario_id, folio, cliente_id, recibo, nota, folioref, iva } = req.body;
 
         try {
@@ -161,3 +169,5 @@ export default async function handler(req, res) {
         res.status(405).end(`Method ${method} Not Allowed`);
     }
 }
+
+export default authMiddleware(handler)

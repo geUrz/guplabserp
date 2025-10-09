@@ -1,5 +1,5 @@
-import { Confirm, IconClose, Loading, ToastSuccess } from '@/components/Layouts'
-import { FaCheck, FaEdit, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
+import { Confirm, IconClose, IconDel, IconEdit, Loading, RowHeadModal, ToastSuccess } from '@/components/Layouts'
+import { FaPlus } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
@@ -9,7 +9,6 @@ import { ReciboPDF } from '../ReciboPDF'
 import { ReciboConceptosForm } from '../ReciboConceptosForm'
 import axios from 'axios'
 import { Button, Form, FormField, FormGroup, Input, TextArea } from 'semantic-ui-react'
-import { RowHeadModal } from '../RowHead'
 import { ReciboEditForm } from '../ReciboEditForm'
 import { ReciboConceptosEditForm } from '../ReciboConceptosEditForm'
 import styles from './ReciboDetalles.module.css'
@@ -62,7 +61,7 @@ const getToggleIVA = async () => {
 
 export function ReciboDetalles(props) {
 
-  const { user, loading, recibo, reciboId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm, onToastSuccess, onToastSuccessMod, onToastSuccessDel, reciboSeleccionado } = props
+  const { loading, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm, onToastSuccess, onToastSuccessDel } = props
 
   const [showConcep, setShowForm] = useState(false)
   const [showEditConcep, setShowEditConcept] = useState(false)
@@ -100,12 +99,6 @@ export function ReciboDetalles(props) {
     setShowConfirm(false)
     setShowEditConcept(false)
   }
-
-  const [reciboState, setReciboState] = useState(recibo)
-
-  useEffect(() => {
-    setReciboState(recibo)
-  }, [recibo])
   
 
   const onEditConcept = (conceptoActualizado) => {
@@ -179,28 +172,15 @@ export function ReciboDetalles(props) {
     }
   }
 
-  const [reciboData, setReciboData] = useState(recibo)
-
   useEffect(() => {
-    setReciboData(recibo) 
-  }, [recibo]) 
-
-  const actualizarRecibo = (nuevaData) => {
-    setReciboData((prevState) => ({
-      ...prevState,
-      ...nuevaData, 
-    }))
-  }
-
-  useEffect(() => {
-      setEditNota(!!(reciboData && reciboData.nota))
-    }, [reciboData?.nota])
+      setEditNota(!!(recibo && recibo.nota))
+    }, [recibo?.nota])
   
     useEffect(() => {
-      if (reciboData?.nota !== undefined) {
-        setEditNota(!!reciboData?.nota)
+      if (recibo?.nota !== undefined) {
+        setEditNota(!!recibo?.nota)
       }
-    }, [reciboData?.nota])
+    }, [recibo?.nota])
 
     const [toggleIVA, setToggleIVA] = useState(false)
   
@@ -284,29 +264,29 @@ export function ReciboDetalles(props) {
           <div className={styles.datos_1}>
             <div>
               <h1>Recibo</h1>
-              <h2>{getValueOrDefault(reciboData?.recibo)}</h2>
+              <h2>{getValueOrDefault(recibo?.recibo)}</h2>
             </div>
             <div>
               <h1>Cliente</h1>
-              <h2>{getValueOrDefault(reciboData?.cliente_nombre)}</h2>
+              <h2>{getValueOrDefault(recibo?.cliente_nombre)}</h2>
             </div>
             <div>
               <h1>Atención a</h1>
-              <h2>{getValueOrDefault(reciboData?.cliente_contacto)}</h2>
+              <h2>{getValueOrDefault(recibo?.cliente_contacto)}</h2>
             </div>
           </div>
           <div className={styles.datos_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(reciboData?.folio)}</h2>
+              <h2>{getValueOrDefault(recibo?.folio)}</h2>
             </div>
             <div>
               <h1>Fecha</h1>
-              <h2>{getValueOrDefault(formatDateIncDet(reciboData?.createdAt))}</h2>
+              <h2>{getValueOrDefault(formatDateIncDet(recibo?.createdAt))}</h2>
             </div>
             <div>
-              <h1>F / R</h1>
-              <h2>{getValueOrDefault(reciboData?.folioref)}</h2>
+              <h1>Cotización</h1>
+              <h2>{getValueOrDefault(recibo?.folioref)}</h2>
             </div>
           </div>
         </div>
@@ -361,20 +341,20 @@ export function ReciboDetalles(props) {
                 </>
               ) : (
                 <>
-                  <h1>${formatCurrency(subtotal)}</h1>
-                  <h1>${formatCurrency(iva)}</h1>
+                  <h1>{formatCurrency(subtotal)}</h1>
+                  <h1>{formatCurrency(iva)}</h1>
                 </>
               )}
 
               {!toggleIVA ? (
-                <h1>${formatCurrency(subtotal)}</h1>
+                <h1>{formatCurrency(subtotal)}</h1>
               ) : (
-                <h1>${formatCurrency(total)}</h1>
+                <h1>{formatCurrency(total)}</h1>
               )}
             </div>
           </div>
 
-        <div className={styles.toggleNota}>
+        <div className={styles.nota}>
           <h1>Nota</h1>
         </div>
 
@@ -397,20 +377,17 @@ export function ReciboDetalles(props) {
             </Button>
           </Form>
         </div>
+        
+        <IconEdit onOpenEdit={onOpenEditRecibo} />
 
-        <div className={styles.iconEdit} onClick={onOpenEditRecibo}>
-          <div><FaEdit /></div>
-        </div>
-        <div className={styles.iconDel}>
-          <div><FaTrash onClick={() => setShowConfirmDel(true)} /></div>
-        </div>
+        <IconDel setShowConfirmDel={() => setShowConfirmDel(true)} />
 
-        <ReciboPDF reciboData={reciboData} conceptos={reciboState?.conceptos || []} ivaValue={ivaValue} />
+        <ReciboPDF recibo={recibo} conceptos={reciboState?.conceptos || []} ivaValue={ivaValue} />
 
       </div>
 
       <BasicModal title='modificar el recibo' show={showEditRecibo} onClose={onOpenEditRecibo}>
-        <ReciboEditForm reload={reload} onReload={onReload} reciboData={reciboData} actualizarRecibo={actualizarRecibo} onOpenEditRecibo={onOpenEditRecibo} onToastSuccessMod={onToastSuccessMod} />
+        <ReciboEditForm reload={reload} onReload={onReload} recibo={recibo} actualizarRecibo={actualizarRecibo} onOpenEditRecibo={onOpenEditRecibo}/>
       </BasicModal>
 
       <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>
@@ -440,16 +417,6 @@ export function ReciboDetalles(props) {
 
       <Confirm
         open={showConfirm}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDeleteConcept}
         onCancel={() => setShowConfirm(false)}
         onClick={() => onOpenCloseConfirm}
@@ -458,16 +425,6 @@ export function ReciboDetalles(props) {
 
       <Confirm
         open={showConfirmDel}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDelete}
         onCancel={onOpenCloseConfirmDel}
         content='¿ Estas seguro de eliminar el recibo ?'

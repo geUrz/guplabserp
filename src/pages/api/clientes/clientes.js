@@ -1,4 +1,4 @@
-import {connection} from "@/libs/db"
+import connection from "@/libs/db"
 
 export default async function handler(req, res) {
     const { id, search } = req.query;
@@ -85,14 +85,14 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'ID del cliente es obligatorio' })
         }
 
-        const { folio, nombre, contacto, cel, direccion, email } = req.body
+        const { nombre, contacto, cel, direccion, email } = req.body
 
         if (!nombre || !contacto) {
             return res.status(400).json({ error: 'Todos los datos son obligatorios' })
         }
 
         try {
-            const [result] = await connection.query('UPDATE clientes SET folio = ?, nombre = ?, contacto = ?, cel = ?, direccion = ?, email = ? WHERE id = ?', [folio, nombre, contacto, cel, direccion, email, id])
+            const [result] = await connection.query('UPDATE clientes SET nombre = ?, contacto = ?, cel = ?, direccion = ?, email = ? WHERE id = ?', [nombre, contacto, cel, direccion, email, id])
 
             if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Cliente no encontrado' })

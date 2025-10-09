@@ -17,27 +17,28 @@
 }
 
 .section > div{
-  padding: 10px;
+  padding: 15px;
   margin-right: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--clr0);
-  border-radius: 5px;
+  background-color: var(--bgBtnN);
+  border-radius: 50%;
   cursor: pointer;
 }
 
 .section div:hover{
-  background-color: var(--clr0);
+  background-color: var(--bgBtnN1);
 }
 
 .section div:active{
-  background-color: var(--clr1);
+  background-color: var(--bgBtnN2);
 }
 
 .section svg, .section path{
   font-size: 20px;
+  color: var(--bgBody);
   cursor: pointer;
 }
 

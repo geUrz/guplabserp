@@ -1,10 +1,14 @@
 import { Button, Dropdown, Form, FormField, FormGroup, Label, Input, Message } from 'semantic-ui-react'
 import { useState } from 'react'
 import styles from './ConceptosForm.module.css'
-import { IconClose } from '@/components/Layouts'
+import { DatosOb, IconClose } from '@/components/Layouts'
 
 export function ConceptosForm(props) {
+
   const { añadirConcepto, onOpenCloseConcep } = props
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
 
@@ -36,13 +40,19 @@ export function ConceptosForm(props) {
     })
   }
 
-  const handleAddConcepto = () => {
+  const handleAddConcepto = async () => {
     if (!validarFormConceptos()) return
-    const conceptoConTotal = { ...nuevoConcepto, total: nuevoConcepto.total }
-    añadirConcepto(conceptoConTotal)
-    setNuevoConcepto({ tipo: '', concepto: '', precio: '', cantidad: '', total: 0 })
-    onOpenCloseConcep()
-  }
+  
+    setIsLoading(true)
+    try {
+      const conceptoConTotal = { ...nuevoConcepto, total: nuevoConcepto.total }
+      await añadirConcepto(conceptoConTotal)
+      setNuevoConcepto({ tipo: '', concepto: '', precio: '', cantidad: '', total: 0 })
+      onOpenCloseConcep()
+    } finally {
+      setIsLoading(false)
+    }
+  }  
 
   return (
     <>
@@ -50,9 +60,9 @@ export function ConceptosForm(props) {
       <Form>
         <FormGroup widths='equal'>
           <FormField error={!!errors.tipo}>
-            <Label>Tipo</Label>
+            <Label>Tipo*</Label>
             <Dropdown
-              placeholder='Selecciona una opción'
+              placeholder='Seleccionar'
               fluid
               selection
               options={opcionesSerprod}
@@ -62,7 +72,7 @@ export function ConceptosForm(props) {
             {errors.tipo && <Message negative>{errors.tipo}</Message>}
           </FormField>
           <FormField error={!!errors.concepto}>
-            <Label>Concepto</Label>
+            <Label>Concepto*</Label>
             <Input
               type="text"
               value={nuevoConcepto.concepto}
@@ -71,7 +81,7 @@ export function ConceptosForm(props) {
             {errors.concepto && <Message negative>{errors.concepto}</Message>}
           </FormField>
           <FormField error={!!errors.precio}>
-            <Label>Precio</Label>
+            <Label>Precio*</Label>
             <Input
               type="number"
               value={nuevoConcepto.precio}
@@ -80,7 +90,7 @@ export function ConceptosForm(props) {
             {errors.precio && <Message negative>{errors.precio}</Message>}
           </FormField>
           <FormField error={!!errors.cantidad}>
-            <Label>Qty</Label>
+            <Label>Qty*</Label>
             <Input
               type="number"
               value={nuevoConcepto.cantidad}
@@ -89,8 +99,13 @@ export function ConceptosForm(props) {
             {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
           </FormField>
         </FormGroup>
-        <Button primary onClick={handleAddConcepto}>Añadir Concepto</Button>
+        <Button primary loading={isLoading} onClick={handleAddConcepto}>Agregar</Button>
+      
+        <DatosOb />
+      
       </Form>
+
+
     </>
   )
 }

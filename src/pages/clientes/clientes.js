@@ -1,16 +1,18 @@
-import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
+import styles from './clientes.module.css'
+import { Add, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
 import { BasicLayout, BasicModal } from '@/layouts'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { FaSearch } from 'react-icons/fa'
 import { ClienteForm, ClientesLista, ClientesListSearch, SearchClientes } from '@/components/Clientes'
-import styles from './clientes.module.css'
+import { usePermissions } from '@/hooks'
 
 export default function Clientes() {
 
   const { user, loading } = useAuth()
+
+  const {isAdmin, isSuperUser} = usePermissions()
 
   const [reload, setReload] = useState(false)
 
@@ -40,20 +42,12 @@ export default function Clientes() {
   }, [reload, user])
 
   const [toastSuccess, setToastSuccess] = useState(false)
-  const [toastSuccessMod, setToastSuccessMod] = useState(false)
   const [toastSuccessDel, setToastSuccessDel] = useState(false)
 
   const onToastSuccess = () => {
     setToastSuccess(true)
     setTimeout(() => {
       setToastSuccess(false)
-    }, 3000)
-  }
-
-  const onToastSuccessMod = () => {
-    setToastSuccessMod(true)
-    setTimeout(() => {
-      setToastSuccessMod(false)
     }, 3000)
   }
 
@@ -74,39 +68,30 @@ export default function Clientes() {
 
       <BasicLayout relative onReload={onReload}>
 
-        {toastSuccess && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccess(false)} />}
+        {toastSuccess && <ToastSuccess onClose={() => setToastSuccess(false)} />}
 
-        {toastSuccessMod && <ToastSuccess contain='Modificado exitosamente' onClose={() => setToastSuccessMod(false)} />}
+        {toastSuccessDel && <ToastDelete onClose={() => setToastSuccessDel(false)} />}
 
-        {toastSuccessDel && <ToastDelete contain='Eliminado exitosamente' onClose={() => setToastSuccessDel(false)} />}
-
-        <Title title='clientes'  />
-
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchClientes onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <ClientesListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
-
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar cliente</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
-
-        <ClientesLista reload={reload} onReload={onReload} clientes={clientes} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
+        <Title title='clientes' />
 
         <Add onOpenClose={onOpenCloseForm} />
+
+        <Search
+          title='cliente'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          isAdmin={isAdmin}
+          isSuperUser={isSuperUser}
+          reload={reload}
+          onReload={onReload}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchClientes}
+          SearchListComponent={ClientesListSearch}
+          onToastSuccess={onToastSuccess}
+        />
+
+        <ClientesLista isAdmin={isAdmin} isSuperUser={isSuperUser} reload={reload} onReload={onReload} clientes={clientes} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 

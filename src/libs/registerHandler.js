@@ -1,38 +1,46 @@
-import {connection} from '@/libs/db'; // Asegúrate de importar la configuración de la base de datos
+import connection from '@/libs/db';
 import bcrypt from 'bcrypt';
 
 export default async function registerHandler(req, res) {
-  const { nombre, usuario, cel, email, nivel, password } = req.body;
-
   try {
-    // Verificar si el usuario o el correo ya están registrados
-    const [existingUser] = await connection.query(
-      'SELECT * FROM usuarios WHERE email = ? OR usuario = ?', 
-      [email, usuario]
-    );
-
-    if (existingUser.length > 0) {
-      if (existingUser[0].email === email) {
-        return res.status(400).json({ error: '¡ El correo ya está registrado !' });
-      }
-      if (existingUser[0].usuario === usuario) {
-        return res.status(400).json({ error: '¡ El usuario ya está registrado !' });
-      }
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: `Método ${req.method} no permitido` });
     }
 
-    // Hashear la contraseña
+    const { folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive, password } = req.body;
+
+    if (!folio || !nombre || !usuario || !isactive || !password) {
+      return res.status(400).json({ error: "Todos los campos son obligatorios." });
+    }
+
+    let existingUserQuery = 'SELECT * FROM usuarios WHERE usuario = ?';
+    let existingUserParams = [usuario];
+
+    if (email) {
+      existingUserQuery = 'SELECT * FROM usuarios WHERE email = ? OR usuario = ?';
+      existingUserParams = [email, usuario];
+    }
+
+    const [existingUser] = await connection.query(existingUserQuery, existingUserParams);
+
+    if (existingUser && existingUser.length > 0) {
+      let errorMsg = "¡ El usuario ya está registrado !";
+      if (email && existingUser[0].email === email) {
+        errorMsg = "¡ El correo ya está registrado !";
+      }
+      return res.status(400).json({ error: errorMsg });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Guardar el nuevo usuario en la base de datos
     const [result] = await connection.query(
-      'INSERT INTO usuarios (usuario, email, cel, nivel, password) VALUES (?, ?, ?, ?, ?, ?)',
-      [nombre, usuario, cel, email, nivel, hashedPassword]
+      'INSERT INTO usuarios (folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive, hashedPassword]
     );
 
-    // Devolver una respuesta exitosa
     return res.status(201).json({ message: 'Usuario registrado exitosamente', userId: result.insertId });
   } catch (error) {
-    console.error('Error al registrar el usuario:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error("🚨 Error inesperado en la API:", error);
+    return res.status(500).json({ error: "Error interno del servidor." });
   }
 }

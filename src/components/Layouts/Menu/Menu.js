@@ -1,17 +1,23 @@
+import styles from './Menu.module.css'
 import { Image } from 'semantic-ui-react'
-import { FaBars, FaHome, FaTimes, FaUserCircle } from 'react-icons/fa'
+import { FaBars, FaBuilding, FaHome, FaMoon, FaSun, FaTimes, FaUserCircle } from 'react-icons/fa'
 import { useState } from 'react'
-import { FaClipboard, FaFileAlt, FaFileContract, FaFileInvoice, FaFileInvoiceDollar, FaPaperclip, FaUser, FaUsers } from 'react-icons/fa'
+import { FaClipboard, FaFileAlt, FaFileContract, FaFileInvoice, FaFileInvoiceDollar, FaUser, FaUsers } from 'react-icons/fa'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/router'
-import styles from './Menu.module.css'
+import { useTheme } from '@/contexts'
+import { usePermissions } from '@/hooks'
 
 export function Menu() {
 
-  const {user} = useAuth()
+  const { user } = useAuth()
 
   const router = useRouter()
+
+  const {isAdmin} = usePermissions()
+
+  const { theme, toggleTheme } = useTheme()
 
   const [menu, setMenu] = useState(false)
 
@@ -20,10 +26,10 @@ export function Menu() {
   return (
 
     <>
-    
+
       <div className={styles.mainTop}>
         <Link href='/'>
-          <Image src='img/logo.webp' />
+          <Image src={theme != 'dark' ? 'img/logoB.webp' : 'img/logoW.webp'} />
         </Link>
         <div className={styles.iconBar} onClick={onMenu}>
           {menu ? (
@@ -34,7 +40,7 @@ export function Menu() {
         </div>
       </div>
 
-      <div className={styles.mainMenuSide} style={{left : menu ? '0' : '-100%'}} onClick={onMenu}>
+      <div className={styles.mainMenuSide} style={{ left: menu ? '0' : '-100%' }} onClick={onMenu}>
         <div className={styles.menuTop} onClick={() => router.push('usuario')}>
           <FaUserCircle />
           <h1>{user.usuario}</h1>
@@ -48,13 +54,13 @@ export function Menu() {
             <FaFileInvoice />
             <h1>Recibos</h1>
           </Link>
-          <Link href='ordenesdeservicio'>
-            <FaFileAlt />
-            <h1>Órdenes de servicio</h1>
-          </Link>
           <Link href='cotizaciones'>
             <FaFileContract />
             <h1>Cotizaciones</h1>
+          </Link>
+          <Link href='ordenesdeservicio'>
+            <FaFileAlt />
+            <h1>Órdenes de servicio</h1>
           </Link>
           <Link href='reportes'>
             <FaClipboard />
@@ -72,9 +78,29 @@ export function Menu() {
             <FaUser />
             <h1>Usuarios</h1>
           </Link>
+
+          {isAdmin &&
+            <Link href='negocios'>
+              <FaBuilding />
+              <h1>Negocios</h1>
+            </Link>
+          }
+
         </div>
+
+        <div className={styles.toggleTheme}>
+          {theme != 'dark' ?
+            <div className={styles.iconThemeSun}>
+              <FaSun onClick={toggleTheme} />
+            </div> :
+            <div className={styles.iconThemeMoon}>
+              <FaMoon onClick={toggleTheme} />
+            </div>
+          }
+        </div>
+
       </div>
-    
+
     </>
 
   )

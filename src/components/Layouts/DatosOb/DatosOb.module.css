@@ -1,0 +1,11 @@
+.datosOblig{
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.datosOblig h2{
+  font-size: 11.5px;
+  color: var(--clrFont);
+}

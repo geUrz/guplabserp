@@ -1,5 +1,5 @@
-.user{
-  padding-bottom: 30px;
+.main{
+  padding: 200px 0;
   width: 100%;
   height: auto;
   display: flex;
@@ -8,18 +8,46 @@
   justify-content: center;
 }
 
-.user svg, .user path{
-  font-size: 80px;
-  color: azure;
+.boxForm{
+  padding: 80px 0;
+  width: 320px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(22, 22, 22, 0.2) 0px 8px 24px;
 }
 
-.user h1{
-  margin-top: 10px;
-  font-size: 18px;
-  color: azure;
+.logo{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo img{
+  height: 60px;
+}
+
+.h1{
+  padding: 20px 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.h1 h1{
+  font-size: 22px;
+  text-align: center;
+  color: var(--clrFont);
 }
 
 .link{
+  margin-top: 20px;
   width: 100%;
   height: auto;
   display: flex;
@@ -28,14 +56,39 @@
 }
 
 .link a{
-  margin-top: 10px;
   font-size: 14.5px;
-  color: var(--clrBL2);
+  color: var(--clrFont);
   cursor: pointer;
 }
 
-.error{
-  margin: 5px 0 0 0 !important;
-  font-size: 12px;
-  color: red;
+.footer{
+  margin-top: 50px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer div{
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer h1{
+  font-size: 14px;
+  color: var(--clrFont);
+  font-weight: 600 !important;
+}
+
+@media screen and (min-width: 768px) {
+
+  .boxForm{
+    width: 500px;
+  }
+
 }

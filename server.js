@@ -1,14 +1,14 @@
 import dotenv from 'dotenv';
-dotenv.config()
+dotenv.config({ path: '.env.local' })
 
 import express from 'express';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io'
 import next from 'next';
 import path from 'path';
-import webPush from 'web-push';  // Importa web-push
-import bodyParser from 'body-parser';  // Para manejar JSON
-import { connection } from './src/libs/db.js';  // Tu conexión a la base de datos MySQL
+import webPush from 'web-push';  
+import bodyParser from 'body-parser'; 
+import connection from './src/libs/db.js';  
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -16,11 +16,10 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-// Configuración de las claves VAPID
 const vapidKeys = {
-  publicKey: 'BGLpa98smGM6E6yxSt5It_xLibXkF3beH1qRhC01giRzfmrZlU-u8-Bg66zvOsuEaEglWp-mQ5cXPxa60wUYn3M', // Usar la clave pública desde el archivo .env.local
-  privateKey: 'V51HP0hbTtK6xtR3vsRv6ijaFM1lXo0wRnsblRUhSug', // Usar la clave privada desde el archivo .env.local
-};
+  publicKey: process.env.VAPID_PUBLIC_KEY,
+  privateKey: process.env.VAPID_PRIVATE_KEY,
+}
 
 if (!vapidKeys.publicKey || !vapidKeys.privateKey) {
   throw new Error('No key set vapidDetails.publicKey');

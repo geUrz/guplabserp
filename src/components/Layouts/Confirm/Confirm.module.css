@@ -1,0 +1,36 @@
+.iconClose svg, .iconClose path{
+  padding: 8px;
+  font-size: 34px;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--clrGlobalB);
+  cursor: pointer;
+}
+
+.iconCheck{
+  margin-bottom: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bgBtnN);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.iconCheck:hover{
+  background-color: var(--bgBtnN1);
+}
+
+.iconCheck:active{
+  background-color: var(--bgBtnN2);
+}
+
+.iconCheck svg, .iconCheck path{
+  font-size: 20px;
+  color: var(--bgBody);
+  cursor: pointer;
+}

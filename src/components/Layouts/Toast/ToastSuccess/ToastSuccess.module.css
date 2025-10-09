@@ -1,7 +1,7 @@
 .section  {
   width: 100%;
   min-height: 100%;
-  background-color: rgba(0, 0, 0, .9);
+  background-color: var(--bgModalToast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,15 +21,7 @@
 }
 
 .toast svg, .toast path{
-  font-size: 50px;
-  color: var(--clrBL2);
-}
-
-.toast h1{
-  margin-top: 50px;
-  font-size: 18px;
-  font-weight: 600 !important;
-  text-align: center;
-  color: var(--clrBL2);
+  font-size: 64px;
+  color: var(--bgBtnToast);
 }
 

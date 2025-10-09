@@ -1,18 +1,14 @@
-import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
-import { IconClose, Confirm } from '@/components/Layouts'
+import styles from './ClienteDetalles.module.css'
+import { IconClose, Confirm, IconEdit, IconDel } from '@/components/Layouts'
 import { useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { ClienteEditForm } from '../ClienteEditForm'
-import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
-import styles from './ClienteDetalles.module.css'
 
 export function ClienteDetalles(props) {
 
-  const { reload, onReload, cliente, onCloseDetalles, onToastSuccessMod, toastSuccessDel } = props
-
-  const { user } = useAuth()
+  const { isAdmin, isSuperUser, reload, onReload, cliente, onCloseDetalles, onToastSuccess, toastSuccessDel } = props
 
   const [showEdit, setShowEdit] = useState(false)
 
@@ -75,47 +71,20 @@ export function ClienteDetalles(props) {
           </div>
         </div>
 
-        {user.nivel === 'Admin' || user.nivel === 'Usuario' ? (
-          <>
+        <IconEdit onOpenEdit={onOpenCloseEdit} />
 
-            <div className={styles.iconEdit}>
-              <div onClick={onOpenCloseEdit}>
-                <FaEdit />
-              </div>
-            </div>
+        {(isAdmin || isSuperUser) &&
+          <IconDel onOpenDel={onOpenCloseConfirmDel} />
+        }   
 
-            {user.nivel === 'admin' ? (
-              <div className={styles.iconDel}>
-                <div>
-                  <FaTrash onClick={onOpenCloseConfirmDel} />
-                </div>
-              </div>
-            ) : (
-              ''
-            )}
-
-          </>
-        ) : (
-          ''
-        )}
       </div>
 
       <BasicModal title='modificar cliente' show={showEdit} onClose={onOpenCloseEdit}>
-        <ClienteEditForm reload={reload} onReload={onReload} cliente={cliente} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
+        <ClienteEditForm reload={reload} onReload={onReload} cliente={cliente} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <Confirm
         open={showConfirmDel}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDeleteCliente}
         onCancel={onOpenCloseConfirmDel}
         content='¿ Estas seguro de eliminar el cliente ?'

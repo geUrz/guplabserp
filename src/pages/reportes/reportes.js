@@ -1,11 +1,11 @@
-import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
+import { Add, ListMap, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
 import { BasicLayout, BasicModal } from '@/layouts'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { ReporteForm, ReporteList, ReportesListSearch, SearchReporte } from '@/components/Reportes'
-import { FaSearch } from 'react-icons/fa'
+import { ReporteDetalles, ReporteForm, ReporteList, ReportesListSearch, SearchReporte } from '@/components/Reportes'
+import { FaClipboard, FaSearch } from 'react-icons/fa'
 import styles from './reportes.module.css'
 
 
@@ -75,39 +75,47 @@ export default function Reportes() {
 
       <BasicLayout relative onReload={onReload}>
 
-        {toastSuccess && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccessReportes(false)} />}
+        {toastSuccess && <ToastSuccess onClose={() => setToastSuccessReportes(false)} />}
 
-        {toastSuccessMod && <ToastSuccess contain='Modificado exitosamente' onClose={() => setToastSuccessReportesMod(false)} />}
+        {toastSuccessMod && <ToastSuccess onClose={() => setToastSuccessReportesMod(false)} />}
 
-        {toastSuccessDel && <ToastDelete contain='Eliminado exitosamente' onClose={() => setToastSuccessReportesDel(false)} />}
+        {toastSuccessDel && <ToastDelete onClose={() => setToastSuccessReportesDel(false)} />}
 
-        <Title title='reportes'  />
-
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchReporte onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <ReportesListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
-
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar reporte</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
-
-        <ReporteList reload={reload} onReload={onReload} reportes={reportes} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
+        <Title title='reportes' />
 
         <Add onOpenClose={onOpenCloseForm} />
+
+        <Search
+          title='reporte'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          user={user}
+          reload={reload}
+          onReload={onReload}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchReporte}
+          SearchListComponent={ReportesListSearch}
+          onToastSuccessMod={onToastSuccessMod}
+        />
+
+        {/* <ReporteList reload={reload} onReload={onReload} reportes={reportes} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} /> */}
+
+        <ListMap
+          loading={loading}
+          reload={reload}
+          onReload={onReload}
+          onToastSuccessMod={onToastSuccessMod}
+          onToastSuccessDel={onToastSuccessDel}
+          ModuleDetalles={ReporteDetalles}
+          title='detalles del reporte'
+          modules={reportes}
+          icon={<FaClipboard />}
+          header1='Reporte'
+          header2='Cliente'
+          column1='reporte'
+          column2='cliente_nombre'
+        />
 
       </BasicLayout>
 

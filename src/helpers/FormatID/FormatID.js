@@ -1,6 +1,6 @@
 export function genIncId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'INC-0'; // Prefijo para el folio
+  let result = 'INC0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -9,7 +9,7 @@ export function genIncId(length) {
 
 export function genVTId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'VT-0'; // Prefijo para el folio
+  let result = 'VT0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -18,7 +18,7 @@ export function genVTId(length) {
 
 export function genAnuId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'ANU-0'; // Prefijo para el folio
+  let result = 'ANU0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -27,7 +27,7 @@ export function genAnuId(length) {
 
 export function genRepId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'REP-0'; // Prefijo para el folio
+  let result = 'REP0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -36,7 +36,7 @@ export function genRepId(length) {
 
 export function genResId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'RES-0'; // Prefijo para el folio
+  let result = 'RES0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -45,7 +45,7 @@ export function genResId(length) {
 
 export function genVId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'VIS-0'; // Prefijo para el folio
+  let result = 'VIS0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -54,7 +54,7 @@ export function genVId(length) {
 
 export function genVPId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'VP-0'; // Prefijo para el folio
+  let result = 'VP0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -70,7 +70,7 @@ export function formatClientId(id) {
 
 export function genUserId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'US-0'; // Prefijo para el folio
+  let result = 'US0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -79,7 +79,7 @@ export function genUserId(length) {
 
 export function genOSId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'OS-0'; // Prefijo para el folio
+  let result = 'OS0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -88,7 +88,7 @@ export function genOSId(length) {
 
 export function genRECId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'REC-0'; // Prefijo para el folio
+  let result = 'REC0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -97,7 +97,7 @@ export function genRECId(length) {
 
 export function genCUEId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'CUE-0'; // Prefijo para el folio
+  let result = 'CUE0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -106,7 +106,7 @@ export function genCUEId(length) {
 
 export function genCOTId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'COT-0'; // Prefijo para el folio
+  let result = 'COT0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -115,7 +115,16 @@ export function genCOTId(length) {
 
 export function genCLId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = 'CLI-0'; // Prefijo para el folio
+  let result = 'CLI0'; // Prefijo para el folio
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+export function genNEId(length) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = 'NEG0'; // Prefijo para el folio
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }

@@ -4,6 +4,8 @@ import 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
 import styles from './ReciboPDF.module.css'
+import { useState } from 'react'
+import { Loading } from '@/components/Layouts'
 
 const openDB = () => {
   return new Promise((resolve, reject) => {
@@ -38,7 +40,11 @@ export function ReciboPDF(props) {
 
   const { reciboData, conceptos, ivaValue } = props
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const generarPDF = async () => {
+
+    setIsLoading(true)
 
     if (!reciboData) return
 
@@ -74,21 +80,21 @@ export function ReciboPDF(props) {
       return str.replace(/\b\w/g, char => char.toUpperCase());
     }
 
-    doc.setFontSize(`${font2}`)
-    doc.setTextColor(0, 0, 0)
-    doc.text('CLICKNETMX', 15, 23)
-    doc.setFontSize(`${font2}`)
-    doc.setTextColor(120, 120, 120)
-    doc.text('Punta Este Corporativo', 15, 27)
-    doc.text('Calzada Carranza 951,', 15, 31)
-    doc.text('Piso 10 Suite 304, Interior "E"', 15, 35)
-    doc.text('C.P. 2125', 15, 39)
-    doc.setFontSize(`${font3}`)
-    doc.setTextColor(0, 0, 0)
-    doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
-    doc.setFontSize(`${font3}`)
-    doc.setTextColor(120, 120, 120)
-    doc.text('RFC: EIEJ8906244J3', 15, 47)
+    /*   doc.setFontSize(`${font2}`)
+      doc.setTextColor(0, 0, 0)
+      doc.text('CLICKNET', 15, 23)
+      doc.setFontSize(`${font2}`)
+      doc.setTextColor(120, 120, 120)
+      doc.text('Punta Este Corporativo', 15, 27)
+      doc.text('Calzada Carranza 951,', 15, 31)
+      doc.text('Piso 10 Suite 304, Interior "E"', 15, 35)
+      doc.text('C.P. 2125', 15, 39)
+      doc.setFontSize(`${font3}`)
+      doc.setTextColor(0, 0, 0)
+      doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
+      doc.setFontSize(`${font3}`)
+      doc.setTextColor(120, 120, 120)
+      doc.text('RFC: EIEJ8906244J3', 15, 47)  */
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
@@ -144,9 +150,9 @@ export function ReciboPDF(props) {
       body: conceptos.map(concepto => [
         { content: `${getValueOrDefault(concepto.tipo)}`, styles: { halign: 'center' } },
         { content: `${getValueOrDefault(concepto.concepto)}`, styles: { halign: 'left' } },
-        { content: `$${getValueOrDefault(formatCurrency(concepto.precio * 1))}`, styles: { halign: 'right' } },
+        { content: `${getValueOrDefault(formatCurrency(concepto.precio * 1))}`, styles: { halign: 'right' } },
         { content: `${getValueOrDefault(concepto.cantidad)}`, styles: { halign: 'center' } },
-        { content: `$${getValueOrDefault(formatCurrency(concepto.precio * concepto.cantidad))}`, styles: { halign: 'right' } },
+        { content: `${getValueOrDefault(formatCurrency(concepto.precio * concepto.cantidad))}`, styles: { halign: 'right' } },
       ]),
       headStyles: {
         fillColor: [255, 255, 255],
@@ -154,7 +160,7 @@ export function ReciboPDF(props) {
         fontStyle: 'bold',
         textColor: [0, 0, 0],
         lineWidth: { bottom: 1 },
-        lineColor: [80, 100, 255] 
+        lineColor: [80, 100, 255]
       },
       bodyStyles: { fontSize: `${font3}` },
       columnStyles: {
@@ -178,7 +184,7 @@ export function ReciboPDF(props) {
       const total = toggleIVA ? subtotal + iva : subtotal
       return { subtotal, iva, total }
     }
-    
+
     const { subtotal, iva, total } = calcularTotales()
 
     const top = 230
@@ -209,10 +215,10 @@ export function ReciboPDF(props) {
 
     const verticalData = [
       ...toggleIVA ? [
-        ['Subtotal:', `$${formatCurrency(subtotal)}`],
-        ['IVA:', `$${formatCurrency(iva)}`],
+        ['Subtotal:', `${formatCurrency(subtotal)}`],
+        ['IVA:', `${formatCurrency(iva)}`],
       ] : [],
-      ['Total:', `$${formatCurrency(total)}`]
+      ['Total:', `${formatCurrency(total)}`]
     ];
 
     const pWidth = doc.internal.pageSize.getWidth()
@@ -239,8 +245,8 @@ export function ReciboPDF(props) {
     doc.setFontSize(`${font3}`)
     doc.setTextColor(0, 0, 0)
     doc.text('• Precio en pesos.', 50, 260)
-    doc.text('• Todos nuestros equipos cuentan con 1 año de garantia', 50, 265)
-    doc.text('  por defecto de fabrica. Aplican restricciones.', 50, 270)
+    doc.text('• Este documento no es un comprobante fiscal válido.', 50, 265)
+    doc.text('• Para efectos fiscales, se requiere una factura electrónica.', 50, 270)
 
     const qrCodeText = 'https://www.facebook.com/clicknet.mx'
     const qrCodeDataUrl = await QRCode.toDataURL(qrCodeText)
@@ -259,13 +265,23 @@ export function ReciboPDF(props) {
     addFooterText()
 
     doc.save(`recibo_${reciboData.folio}.pdf`)
+
+    setIsLoading(false)
+
   }
 
   return (
 
     <div className={styles.iconPDF}>
       <div onClick={generarPDF}>
-        <BiSolidFilePdf />
+        {isLoading ? (
+          <Loading
+            size={30}
+            loading={3}
+          />
+        ) : (
+          <BiSolidFilePdf />
+        )}
       </div>
     </div>
 

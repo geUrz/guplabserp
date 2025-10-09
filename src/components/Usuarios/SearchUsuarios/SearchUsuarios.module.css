@@ -21,14 +21,10 @@
 
 .input input{
   width: 280px !important;
-  color: azure !important;
-  background-color: var(--bg2) !important;
+  color: var(--clrFont) !important;
+  background-color: var(--bgInput) !important;
   border-radius: 5px !important;
-  border: 1px solid var(--bg0) !important;
-}
-
-.input input:focus{
-  background-color: var(--bg4) !important;
+  border: 1px solid var(--bgInput) !important;
 }
 
 .iconSearch{
@@ -39,17 +35,9 @@
 
 .iconSearch svg, .iconSearch path{
   font-size: 28px;
-  color: var(--clrBL0);
+  color: var(--clrFont);
   cursor: pointer;
 } 
-
-.iconSearch svg:hover, .iconSearch:hover path{
-  color: var(--clrBL1);
-}
-
-.iconSearch svg:active, .iconSearch:active path{
-  color: var(--clrBL2);
-}
 
 .visitaLista{
   position: absolute;

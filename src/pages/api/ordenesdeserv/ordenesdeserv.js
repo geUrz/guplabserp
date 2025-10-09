@@ -1,4 +1,4 @@
-import { connection } from "@/libs/db"
+import connection from "@/libs/db"
 import axios from "axios";
 
 const ONE_SIGNAL_APP_ID = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;

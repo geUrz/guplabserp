@@ -19,12 +19,13 @@
   margin-top: 5px;
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clr1);
+  color: var(--clrGlobalN);
 }
 
 .box1 h2{
   margin-top: 3px;
   font-size: 12.5px;
+  color: var(--clrGlobalG);
 }
 
 .box1_1, .box1_2{
@@ -62,107 +63,4 @@
   text-align: right;
 }
 
-.iconEdit{
-  margin-top: 50px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconEdit div{
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg2);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.iconEdit svg, .iconEdit path{
-  color: var(--clr2);
-}
-
-.iconEdit div:hover{
-  background-color: var(--bg3);
-}
-
-.iconEdit div:active{
-  background-color: var(--bg4);
-}
-
-.iconEdit svg, .iconEdit path{
-  font-size: 20px;
-  color: var(--clr0);
-  cursor: pointer;
-}
-
-.iconDel{
-  margin-top: 20px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.iconDel svg, .iconDel path{
-  font-size: 20px;
-  color: var(--clrGR000);
-  cursor: pointer;
-}
-
-.iconDel svg:hover, .iconDel:hover path{
-  color: var(--clrGR00);
-}
-
-.iconDel svg:active, .iconDel:active path{
-  color: var(--clrGR0);
-}
-
-.iconClose svg, .iconClose path{
-  padding: 8px;
-  font-size: 34px;
-  color: var(--clrGR00);
-  border-radius: 50%;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
-.iconClose svg:hover,.iconClose path:hover{
-  background-color: var(--clrGR3);
-}
-
-.iconClose svg:active,.iconClose path:active{
-  background-color: var(--clrGR4);
-}
-
-.iconCheck{
-  margin-bottom: 20px;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.iconCheck:hover{
-  background-color: var(--clrGR2);
-}
-
-.iconCheck:active{
-  background-color: var(--clrGR3);
-}
-
-.iconCheck svg, .iconCheck path{
-  font-size: 22px;
-  color: var(--clrBL1);
-  cursor: pointer;
-}
 

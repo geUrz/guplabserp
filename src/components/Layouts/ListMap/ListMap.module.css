@@ -1,0 +1,116 @@
+.main{
+  padding: 20px 0 200px 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.section{
+  padding: 0 10px;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section > div{
+  padding: 8px 0;
+  margin-bottom: 5px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bgList0);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.section > div:hover{
+  background-color: var(--bgList1);
+}
+
+.section > div:active{
+  background-color: var(--bgList2);
+}
+
+.column1{
+  width: 10%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.column1 svg, .column1 path{
+  font-size: 20px;
+  color: var(--clrGlobalN);
+  cursor: pointer;
+}
+
+.column2{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.column2 div:nth-child(1){
+  padding: 0 10px 0 4px;
+  width: 80%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+.column2 div:nth-child(2){
+  width: 80%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+.column2 div:nth-child(3){
+  width: 26%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.column2 h1{
+  font-size: 14px;
+  font-weight: 600 !important;
+  color: var(--clrGlobalN);
+  cursor: pointer;
+}
+
+.column2 h2{
+  font-size: 14px;
+  color: var(--clrGlobalB);
+  cursor: pointer;
+}
+
+@media screen and (min-width:768px) {
+
+  .section{
+    max-width: 800px;
+  }
+
+}

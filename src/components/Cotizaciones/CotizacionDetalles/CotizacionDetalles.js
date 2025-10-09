@@ -1,15 +1,14 @@
-import { Confirm, IconClose, ToastSuccess } from '@/components/Layouts'
-import { FaCheck, FaEdit, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
+import { Confirm, IconClose, IconDel, IconEdit, IconPlus, RowHeadModal, ToastSuccess } from '@/components/Layouts'
+import { FaPlus } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { CotizacionConceptos } from '../CotizacionConceptos'
 import { CotizacionPDF } from '../CotizacionPDF'
 import { CotizacionConceptosForm } from '../CotizacionConceptosForm'
 import axios from 'axios'
-import { Button, Form, FormField, FormGroup, Input, TextArea } from 'semantic-ui-react'
-import { RowHeadModal } from '../RowHead'
+import { Form, FormField, FormGroup, Input, TextArea } from 'semantic-ui-react'
 import { CotizacionEditForm } from '../CotizacionEditForm'
 import { CotizacionConceptosEditForm } from '../CotizacionConceptosEditForm'
 import styles from './CotizacionDetalles.module.css'
@@ -43,7 +42,6 @@ const saveToggleIVA = async (value) => {
   }
 }
 
-
 const getToggleIVA = async () => {
   const db = await openDB()
   const transaction = db.transaction('settings', 'readonly')
@@ -62,7 +60,7 @@ const getToggleIVA = async () => {
 
 export function CotizacionDetalles(props) {
 
-  const { cotizacion, cotizacionId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm, onToastSuccess, onToastSuccessMod, onToastSuccessDel, cotizacionSeleccionado } = props
+  const { cotizacion, cotizacionId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm, onToastSuccess, onToastSuccessDel, cotizacionSeleccionado } = props
 
   const [showConcep, setShowForm] = useState(false)
   const [showEditConcep, setShowEditConcept] = useState(false)
@@ -131,6 +129,8 @@ export function CotizacionDetalles(props) {
   }
 
   const [nota, setNota] = useState(cotizacion?.nota || '')
+  const [isSaving, setIsSaving] = useState(false)
+  const debounceRef = useRef(null)
   const [editNota, setEditNota] = useState(!!cotizacion?.nota)
 
   const maxCharacters = 280
@@ -142,30 +142,36 @@ export function CotizacionDetalles(props) {
     }
   }
 
-  const handleAddNota = async () => {
-    if (!cotizacion.id) {
-      console.error("ID de la cotización no disponible")
-      return;
+  useEffect(() => {
+    if (!cotizacion?.id) return
+  
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
     }
-
-    try {
-      const response = await axios.put(`/api/cotizaciones/nota`, {
-        id: cotizacion.id,
-        notaValue: nota,
-      })
-
-      if (response.status === 200) {
+  
+    debounceRef.current = setTimeout(async () => {
+      setIsSaving(true)
+      try {
+        await axios.put(`/api/cotizaciones/nota`, {
+          id: cotizacion.id,
+          notaValue: nota,
+        })
+  
         setEditNota(true)
         setCotizacionData(prevState => ({
           ...prevState,
           nota: nota
         }))
         onReload()
+      } catch (error) {
+        console.error('Error al guardar la nota automáticamente:', error)
+      } finally {
+        setIsSaving(false)
       }
-    } catch (error) {
-      console.error('Error al actualizar la nota:', error.response?.data || error.message)
-    }
-  }
+    }, 1000) // Espera 1 segundo después de dejar de escribir
+  
+    return () => clearTimeout(debounceRef.current)
+  }, [nota])
 
   const handleDelete = async () => {
     if (!cotizacion?.id) {
@@ -312,11 +318,7 @@ export function CotizacionDetalles(props) {
 
         <CotizacionConceptos conceptos={cotizacionState?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
 
-        <div className={styles.iconPlus}>
-          <div onClick={onOpenCloseConcep}>
-            <FaPlus />
-          </div>
-        </div>
+        <IconPlus onOpenCloseConcep={onOpenCloseConcep} />
 
         <div className={styles.sectionTotal}>
             <div className={styles.sectionTotal_1}>
@@ -358,15 +360,15 @@ export function CotizacionDetalles(props) {
                 </>
               ) : (
                 <>
-                  <h1>${formatCurrency(subtotal)}</h1>
-                  <h1>${formatCurrency(iva)}</h1>
+                  <h1>{formatCurrency(subtotal)}</h1>
+                  <h1>{formatCurrency(iva)}</h1>
                 </>
               )}
 
               {!toggleIVA ? (
-                <h1>${formatCurrency(subtotal)}</h1>
+                <h1>{formatCurrency(subtotal)}</h1>
               ) : (
-                <h1>${formatCurrency(total)}</h1>
+                <h1>{formatCurrency(total)}</h1>
               )}
             </div>
           </div>
@@ -389,25 +391,19 @@ export function CotizacionDetalles(props) {
                 </div>
               </FormField>
             </FormGroup>
-            <Button secondary onClick={handleAddNota}>
-              {editNota ? 'Modificar nota' : 'Añadir nota'}
-            </Button>
           </Form>
         </div>
 
-        <div className={styles.iconEdit}>
-          <div onClick={onOpenEditCotizacion}><FaEdit /></div>
-        </div>
-        <div className={styles.iconDel}>
-          <div><FaTrash onClick={() => setShowConfirmDel(true)} /></div>
-        </div>
+        <IconEdit onOpenEdit={onOpenEditCotizacion} />
+        
+        <IconDel onOpenDel={() => setShowConfirmDel(true)} />
 
         <CotizacionPDF cotizacionData={cotizacionData} conceptos={cotizacionState?.conceptos || []} ivaValue={ivaValue} />
 
       </div>
 
       <BasicModal title='modificar la cotización' show={showEditRecibo} onClose={onOpenEditCotizacion}>
-        <CotizacionEditForm reload={reload} onReload={onReload} cotizacionData={cotizacionData} actualizarCotizacion={actualizarCotizacion} onOpenEditCotizacion={onOpenEditCotizacion} onToastSuccessMod={onToastSuccessMod} />
+        <CotizacionEditForm reload={reload} onReload={onReload} cotizacionData={cotizacionData} actualizarCotizacion={actualizarCotizacion} onOpenEditCotizacion={onOpenEditCotizacion} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>
@@ -427,16 +423,6 @@ export function CotizacionDetalles(props) {
 
       <Confirm
         open={showConfirm}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDeleteConcept}
         onCancel={() => setShowConfirm(false)}
         onClick={() => onOpenCloseConfirm}
@@ -445,16 +431,6 @@ export function CotizacionDetalles(props) {
 
       <Confirm
         open={showConfirmDel}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDelete}
         onCancel={onOpenCloseConfirmDel}
         content='¿ Estas seguro de eliminar la cotización ?'

@@ -13,15 +13,13 @@ import styles from './OrdenesdeservicioForm.module.css'
 
 
 export function OrdenesdeservicioForm(props) {
-
-  const { user } = useAuth()
+  
+  const { user, reload, onReload, onOpenCloseForm, onToastSuccess } = props
 
   const [clientes, setClientes] = useState([])
   const [cliente_id, setCliente] = useState('')
   const [ordendeservicio, setOrdendeservicio] = useState('')
   const [descripcion, setDescripcion] = useState('')
-
-  const { reload, onReload, onOpenCloseForm, onToastSuccess } = props
 
   const [show, setShow] = useState(false)
 
@@ -154,7 +152,7 @@ export function OrdenesdeservicioForm(props) {
               <FormField error={!!errors.cliente_id}>
                 <Label>Cliente</Label>
                 <Dropdown
-                  placeholder='Selecciona un cliente'
+                  placeholder='Seleccionar'
                   fluid
                   selection
                   options={clientes.map(cliente => ({

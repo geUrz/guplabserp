@@ -19,7 +19,7 @@
   margin-top: 5px;
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clr1);
+  color: var(--clrFont);
   white-space: pre-line;
 }
 
@@ -27,6 +27,7 @@
   margin-top: 3px;
   font-size: 12.5px;
   white-space: pre-line;
+  color: var(--clrFont);
 }
 
 
@@ -69,102 +70,6 @@
 .box1_2 h1, .box1_2 h2{
   text-align: right;
   word-break: break-all;
-}
-
-.iconEdit{
-  margin-top: 50px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconEdit div{
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--bg2);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.iconEdit svg, .iconEdit path{
-  color: var(--clr2);
-}
-
-.iconEdit div:hover{
-  background-color: var(--bg3);
-}
-
-.iconEdit div:active{
-  background-color: var(--bg4);
-}
-
-.iconEdit svg, .iconEdit path{
-  font-size: 20px;
-  color: var(--clr0);
-  cursor: pointer;
-}
-
-.iconDel{
-  margin-top: 20px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.iconDel svg, .iconDel path{
-  font-size: 20px;
-  color: var(--clrGR000);
-  cursor: pointer;
-}
-
-.iconDel div svg:hover, .iconDel div:hover path{
-  color: var(--clrGR00);
-}
-
-.iconDel div svg:active, .iconDel div:active path{
-  color: var(--clrGR0);
-}
-
-.iconClose svg, .iconClose path{
-  padding: 8px;
-  font-size: 34px;
-  color: var(--clrGR00);
-  border-radius: 50%;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
-.iconCheck{
-  margin-bottom: 20px;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.iconCheck:hover{
-  background-color: var(--bg2);
-}
-
-.iconCheck:active{
-  background-color: var(--bg3);
-}
-
-.iconCheck svg, .iconCheck path{
-  font-size: 22px;
-  color: var(--clr1);
-  cursor: pointer;
 }
 
 @media screen and (min-width: 768px) {

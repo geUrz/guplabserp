@@ -114,7 +114,7 @@ export default function Entradas() {
             <div className={styles.count}>
               {!conceptosEnt ?
                 <Loading size={22} loading={3} /> :
-                <h1>${formatCurrency(totalPriceEnt)}</h1>
+                <h1>{formatCurrency(totalPriceEnt)}</h1>
               }
             </div>
           </div>

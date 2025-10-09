@@ -1,4 +1,4 @@
-import { IconClose, Confirm, UploadImg, FirmaDigital } from '@/components/Layouts'
+import { IconClose, Confirm, UploadImg, FirmaDigital, IconEdit, IconDel } from '@/components/Layouts'
 import { formatDateIncDet, getValueOrDefault } from '@/helpers'
 import { BasicModal, ModalImg } from '@/layouts'
 import { FaCheck, FaEdit, FaImage, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
@@ -590,21 +590,9 @@ export function ReporteDetalles(props) {
           )}
         </div>
 
-        {user.nivel === 'Admin' ? (
-          <>
-            <div className={styles.iconEdit}>
-              <div onClick={onOpenEditReporte}>
-                <FaEdit />
-              </div>
-            </div>
+            <IconEdit onOpenEdit={onOpenEditReporte} />
 
-            <div className={styles.iconDel}>
-              <div>
-                <FaTrash onClick={onOpenCloseConfirmDel} />
-              </div>
-            </div>
-          </>
-        ) : null}
+            <IconDel onOpenDel={onOpenCloseConfirmDel} />
 
         <ReportePDF reporteData={reporteData} firmaTec={firmaTec} firmaCli={firmaCli} toggleEvi={toggleEvi} toggleEviAD={toggleEviAD} togglePagina2={togglePagina2} />
 

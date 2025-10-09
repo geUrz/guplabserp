@@ -1,0 +1,88 @@
+.section{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.box1{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.box1 h1{
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 600 !important;
+  color: var(--clrFont);
+  white-space: pre-line;
+}
+
+.box1 h2{
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--clrFont);
+  white-space: pre-line;
+}
+
+
+.box1_1, .box1_2{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.box1_1 div, .box1_2 div{
+  margin: 5px 0;
+}
+
+.box1_1{
+  padding-right: 10px;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.box1_1 h1, .box1_1 h2{
+  text-align: justify;
+  white-space: pre-line;
+}
+
+.box1_1 h2{
+  text-transform: capitalize;
+}
+
+.box1_2{
+  width: 35%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.box1_2 h1, .box1_2 h2{
+  text-align: right;
+  word-break: break-all;
+}
+
+@media screen and (min-width: 768px) {
+
+  .datos_1 div, .datos_2 div{
+    margin: 15px 0; 
+  }
+
+  .toggleNota{
+    margin-top: 50px;
+    max-width: 450px;
+  }
+
+}
+
+
