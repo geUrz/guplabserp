@@ -54,9 +54,9 @@ export function NegocioEditForm(props) {
     setIsLoading(true)
 
     try {
-      await axios.put(`/api/negocios/negocios?id=${negocio.id}`, formData)
+      await axios.put(`/api/negocios/negocios?id=${negocio?.id}`, formData)
 
-      const res = await axios.get(`/api/negocios/negocios?id=${negocio.id}`)
+      const res = await axios.get(`/api/negocios/negocios?id=${negocio?.id}`)
       dispatch(updateNegocio(res.data))
 
       onReload()

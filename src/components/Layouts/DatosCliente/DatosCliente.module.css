@@ -56,6 +56,10 @@
   white-space: pre-line;
 }
 
+.box1_1 h2{
+  text-transform: capitalize;
+}
+
 .box1_2{
   width: 35%;
   display: flex;
@@ -66,6 +70,19 @@
 .box1_2 h1, .box1_2 h2{
   text-align: right;
   word-break: break-all;
+}
+
+.h1UsuarioNombre{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.h1UsuarioNombre h1{
+  font-size: 14px;
+  color: var(--clrFont);
 }
 
 @media screen and (min-width: 768px) {

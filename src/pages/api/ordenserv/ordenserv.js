@@ -1,4 +1,5 @@
 import connection from "@/libs/db"
+import authMiddleware from "@/middleware/authMiddleware"
 import axios from "axios";
 
 const ONE_SIGNAL_APP_ID = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
@@ -53,93 +54,124 @@ async function sendNotificationToResidentialUsers(header, message, url) {
   }
 }
 
-export default async function handler(req, res) {
-  const { id, search } = req.query; // Agregamos 'search' al destructuring
+export async function handler(req, res) {
+
+  const user = req.user
+    if (!user) return
+
+    const { id, negocio_id, search } = req.query;
+    const isAdmin = user?.nivel === 'admin'
+    const isUsuarioSu = user?.nivel === 'usuariosu'
+    const isUsuario = user?.nivel === 'usuario'
+    const negocioSolicitado = Number(negocio_id)
+    const negocioId = Number(user?.negocio_id)
+
+    if (isUsuario) {
+        return res.status(403).json({ error: 'No tienes permiso para accesar' })
+    }
 
   if (req.method === 'GET') {
 
-    // Caso para búsqueda de reportes insensible a mayúsculas y minúsculas
+    if (id) {
+            try {
+                // Obtener recibo y sus conceptos
+                const [rows] = await connection.query(`
+                  SELECT 
+                    os.id, 
+                    os.folio, 
+                    os.usuario_id, 
+                    os.cliente_id,
+                    c.nombre,
+                    c.contacto, 
+                    os.cliente_nombre, 
+                    os.cliente_contacto, 
+                    os.ordenserv, 
+                    os.descripcion, 
+                    os.page2, 
+                    os.nota, 
+                    os.createdAt,
+                    c.nombre, 
+                    c.contacto,
+                    os.negocio_id,  
+                    n.negocio
+                    FROM recibos r
+                    LEFT JOIN clientes c ON os.cliente_id = c.id
+                    LEFT JOIN negocios n ON os.negocio_id = n.id
+                    WHERE r.id = ?
+                `, [id]);
+
+                if (rows.length === 0) {
+                    return res.status(404).json({ error: 'Ordenservicio no encontrado' });
+                }
+
+                res.status(200).json(rows[0])
+            } catch (error) {
+                res.status(500).json({ error: error.message })
+            }
+
+            return
+        }}
+
     if (search) {
-      const searchQuery = `%${search.toLowerCase()}%`; // Convertimos la búsqueda a minúsculas
-      try {
-        const [rows] = await connection.query(
-          `SELECT 
-                ordenesdeserv.id,
-                ordenesdeserv.usuario_id,
-                usuarios.nombre AS usuario_nombre,
-                usuarios.usuario AS usuario_usuario,
-                ordenesdeserv.folio,
-                ordenesdeserv.cliente_id,
-                clientes.nombre AS cliente_nombre,
-                clientes.contacto AS cliente_contacto,
-                ordenesdeserv.ordendeservicio,
-                ordenesdeserv.descripcion,
-                ordenesdeserv.page2,
-                ordenesdeserv.nota, 
-                ordenesdeserv.firmatec,
-                ordenesdeserv.firmacli,
-                ordenesdeserv.createdAt
-              FROM ordenesdeserv 
-              JOIN usuarios ON ordenesdeserv.usuario_id = usuarios.id
-              LEFT JOIN clientes ON ordenesdeserv.cliente_id = clientes.id
-          WHERE 
-            LOWER(ordenesdeserv.ordendeservicio) LIKE ? 
-            OR 
-              LOWER(ordenesdeserv.folio) LIKE ?
-            OR 
-              LOWER(clientes.nombre) LIKE ?
-            OR 
-              LOWER(clientes.contacto) LIKE ?
-            OR 
-              LOWER(ordenesdeserv.descripcion) LIKE ?
-            OR 
-              LOWER(ordenesdeserv.nota) LIKE ?
-            OR 
-              LOWER(ordenesdeserv.createdAt) LIKE ?
-            ORDER BY ordenesdeserv.updatedAt DESC`,
-          [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]
-        )
+      
+            const searchQuery = `%${search.toLowerCase()}%`
 
-        /* if (rows.length === 0) {
-          return res.status(404).json({ message: 'No se encontraron reportes' })
-        } */
+            try {
 
-        res.status(200).json(rows)
-      } catch (error) {
-        res.status(500).json({ error: 'Error al realizar la búsqueda' })
-      }
-      return
-    }
+                // Construir cláusulas dinámicamente
+                const whereClauses = [
+                    "LOWER(u.nombre) LIKE ?",
+                    "LOWER(u.folio) LIKE ?",
+                    "LOWER(u.usuario) LIKE ?",
+                    "LOWER(u.email) LIKE ?",
+                    "LOWER(u.nivel) LIKE ?",
+                    "LOWER(u.negocio_nombre) LIKE ?",
+                    "LOWER(CAST(u.isactive AS CHAR)) LIKE ?"
+                ];
 
-    // Caso para obtener todos los reportes
-    try {
-      const [rows] = await connection.query(
-        `SELECT
-        ordenesdeserv.id,
-        ordenesdeserv.usuario_id,
-        usuarios.nombre AS usuario_nombre,
-        usuarios.usuario AS usuario_usuario,
-        ordenesdeserv.folio,
-        ordenesdeserv.cliente_id,
-        clientes.nombre AS cliente_nombre,
-        clientes.contacto AS cliente_contacto,
-        ordenesdeserv.ordendeservicio,
-        ordenesdeserv.descripcion,
-        ordenesdeserv.page2,
-        ordenesdeserv.nota, 
-        ordenesdeserv.firmatec,
-        ordenesdeserv.firmacli,
-        ordenesdeserv.createdAt
-    FROM ordenesdeserv
-    JOIN usuarios ON ordenesdeserv.usuario_id = usuarios.id
-    LEFT JOIN clientes ON ordenesdeserv.cliente_id = clientes.id
-    ORDER BY ordenesdeserv.updatedAt DESC
-    `)
-      res.status(200).json(rows)
-    } catch (error) {
-      res.status(500).json({ error: error.message })
-    }
+                const params = [
+                    searchQuery, searchQuery, searchQuery, searchQuery,
+                    searchQuery, searchQuery, searchQuery
+                ];
+
+                if (isActiveQuery !== null) {
+                    whereClauses.push("u.isactive = ?");
+                    params.push(isActiveQuery);
+                }
+
+                let whereClause = `(${whereClauses.join(" OR ")})`;
+
+                if (!isAdmin && negocioId) {
+                    whereClause += ` AND u.negocio_id = ?`;
+                    params.push(negocioId);
+                }
+
+                const query = `
+                SELECT  
+                  u.id,
+                  u.folio, 
+                  u.nombre, 
+                  u.usuario, 
+                  u.email, 
+                  u.nivel,
+                  u.negocio_id,
+                  u.negocio_nombre,
+                  u.isactive
+                FROM usuarios u
+                LEFT JOIN negocios n ON u.negocio_id = n.id
+                 WHERE ${whereClause}
+                 ORDER BY u.updatedAt DESC
+              `;
+
+                const [rows] = await connection.query(query, params);
+                return res.status(200).json(rows);
+
+            } catch (error) {
+                console.error(error)
+                return res.status(500).json({ error: 'Error al realizar la búsqueda' });
+            }
   } else if (req.method === 'POST') {
+
     try {
       const { usuario_id, folio, cliente_id, ordendeservicio, descripcion } = req.body;
       if (!ordendeservicio || !descripcion) {
@@ -211,3 +243,5 @@ export default async function handler(req, res) {
     res.status(405).end(`Method ${req.method} Not Allowed`)
   }
 }
+
+export default authMiddleware(handler)

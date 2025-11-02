@@ -8,7 +8,7 @@ import styles from './NegociosListSearch.module.css'
 import { getValueOrDefault } from '@/helpers'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearSearchResults, searchNegocios, setNegocio } from '@/store/negocios/negocioSlice'
-import { selectNegocios, selectSearchResults } from '@/store/negocios/negocioSelectors'
+import { selectNegociosLoading, selectSearchResults } from '@/store/negocios/negocioSelectors'
 
 export function NegociosListSearch(props) {
 
@@ -16,6 +16,7 @@ export function NegociosListSearch(props) {
 
   const dispatch = useDispatch()
   const negocios = useSelector(selectSearchResults)
+  const loading = useSelector(selectNegociosLoading)
 
   const [showDetalles, setShowDetalles] = useState(false)
 
@@ -31,13 +32,13 @@ export function NegociosListSearch(props) {
 
     useEffect(() => {
       if (query.trim().length > 0) {
-        dispatch(searchNegocios(query)) // Buscar negocios cuando el query cambie
+        dispatch(searchNegocios(query)) 
       }
-    }, [query, dispatch]) // Solo dependemos de `query` y `dispatch`
+    }, [query, dispatch])
   
     useEffect(() => {
       return () => {
-        dispatch(clearSearchResults()) // Limpiar los resultados cuando el componente se desmonte
+        dispatch(clearSearchResults()) 
       }
     }, [dispatch])
     
@@ -45,7 +46,7 @@ export function NegociosListSearch(props) {
 
     <>
 
-      {!negocios ? (
+      {loading ? (
         <Loading size={45} loading={1} />
       ) : (
         size(negocios) === 0 ? (

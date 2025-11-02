@@ -44,7 +44,8 @@
   top: 40px;
   left: 0;
   width: 100%;
-  height: auto;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 @media screen and (min-width: 768px) {

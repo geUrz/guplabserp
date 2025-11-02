@@ -32,23 +32,32 @@
 .datos_1 h1, .datos_2 h1{
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clrGlobalN);
+  color: var(--clrFont);
 }
 
 .datos_1 h2, .datos_2 h2{
   font-size: 14px;
-  color: var(--clrGlobalG);
-}
-
-.datos_1 h2{
-  text-transform: capitalize;
+  color: var(--clrFont);
 }
 
 .datos_2 h2{
   text-align: right;
 }
 
-.toggleOFF, .toggleON{
+.infCliente{
+  margin: 0 !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.infCliente svg, .infCliente path{
+  margin-left: 5px;
+  color: var(--bgBtnN);
+  cursor: pointer;
+}
+
+.toggleOFF, .toggleON, .descON{
   font-size: 30px;
   display: flex;
   align-items: center;
@@ -65,41 +74,7 @@
   cursor: pointer;
 }
 
-.iconPlus{
-  margin-top: 30px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconPlus div{
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: var(--bgBtnN);
-  cursor: pointer;
-}
-
-.iconPlus div:hover{
-  background-color: var(--bgBtnN1);
-}
-
-.iconPlus div:active{
-  background-color: var(--bgBtnN2);
-}
-
-.iconPlus svg, .iconPlus path{
-  font-size: 18px;
-  color: var(--clrBtn);
-  cursor: pointer;
-}
-
-.ivaInput{
+.ivaInput, .descInput{
   margin: 0 4px;
   width: 38px !important;
 }
@@ -115,30 +90,28 @@
 
 .sectionTotal h1{
   font-size: 12.5px;
-  color: var(--clrGlobalG);
+  color: var(--clrFont);
 }
 
 .sectionTotal_1{
   width: 80%;
+  height: 110px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .sectionTotal_2{
   width: 40%;
+  height: 110px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: center;
+  justify-content: space-between;
 }
 
-.sectionTotal_2 h1{
-  margin: 3.5px 0 !important;
-}
-
-.sectionTotal_1 h1:nth-child(3), .sectionTotal_2 h1:nth-child(3){
+.total h1{
   font-weight: 600 !important;
 }
 
@@ -155,7 +128,7 @@
 .nota h1{
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clrGlobalN);
+  color: var(--clrFont);
 }
 
 .formNota{
@@ -165,7 +138,7 @@
 .charCount{
   margin-top: 20px;
   font-size: 12px;
-  color: var(--clrGlobalG);
+  color: var(--clrFont);
 }
 
 @media screen and (min-width: 768px) {

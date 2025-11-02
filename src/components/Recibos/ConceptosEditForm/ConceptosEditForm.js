@@ -1,14 +1,38 @@
+import styles from './ConceptosEditForm.module.css';
 import { Button, Dropdown, Form, FormField, Label, Input, Message } from 'semantic-ui-react';
 import { useState, useEffect } from 'react';
-import styles from './ConceptosEditForm.module.css';
-import { IconClose } from '@/components/Layouts';
-import { FaTrash } from 'react-icons/fa';
+import { DatosOb, IconClose, IconDel } from '@/components/Layouts';
+import { formatCurrencyInput, parseCurrencyInput } from '@/helpers';
 
 export function ConceptosEditForm(props) {
-  const { concepto, onSave, onCloseEditConcep, onOpenCloseConfirm } = props;
+  const { concepto, onSave, onCloseEditConcep, onOpenCloseConfirm } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [editedConcepto, setEditedConcepto] = useState(concepto);
   const [errors, setErrors] = useState({});
+
+  const validarFormConceptos = () => {
+    const newErrors = {}
+
+    if (editedConcepto.tipo !== '.') {
+      if (!editedConcepto.tipo) {
+        newErrors.tipo = 'El campo es requerido'
+      }
+      if (!editedConcepto.concepto) {
+        newErrors.concepto = 'El campo es requerido'
+      }
+      if (!editedConcepto.cantidad || editedConcepto.cantidad <= 0) {
+        newErrors.cantidad = 'El campo es requerido'
+      }
+      if (!editedConcepto.precio || editedConcepto.precio <= 0) {
+        newErrors.precio = 'El campo es requerido'
+      }
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   useEffect(() => {
     setEditedConcepto(concepto);
@@ -34,32 +58,39 @@ export function ConceptosEditForm(props) {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = {};
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    
+    if (!validarFormConceptos()) return
 
-    if (!editedConcepto.tipo) newErrors.tipo = 'El campo es requerido';
-    if (!editedConcepto.concepto) newErrors.concepto = 'El campo es requerido';
-    if (!editedConcepto.precio) newErrors.precio = 'El campo precio es requerido';
-    if (!editedConcepto.cantidad) newErrors.cantidad = 'El campo cantidad es requerido';
+    setIsLoading(true)
 
-    setErrors(newErrors);
+    try {
+      const updatedConcepto = { ...editedConcepto, total: editedConcepto.total }
 
-    onCloseEditConcep();
-
-    if (Object.keys(newErrors).length === 0) {
-      // Enviar el total junto con el resto de los datos
-      const updatedConcepto = { ...editedConcepto, total: editedConcepto.total };
-
-      // Llamamos a onSave para enviar el concepto con el total
       onSave(updatedConcepto);
+      
+      onCloseEditConcep()
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
 
   const opcionesSerprod = [
-    { key: 1, text: 'Servicio', value: 'Servicio' },
-    { key: 2, text: 'Producto', value: 'Producto' },
-  ];
+      { key: 1, text: 'Servicio', value: 'Servicio' },
+      { key: 2, text: 'Producto', value: 'Producto' },
+      { key: 3, text: '<vacio>', value: '.' }
+    ]
+  
+  const handlePrecioChange = (e) => {
+        const rawValue = e.target.value;
+        const numericValue = parseCurrencyInput(rawValue)
+
+        setEditedConcepto((prev) => ({
+          ...prev,
+          precio: numericValue,
+        }))
+  }
 
   return (
     <>
@@ -96,10 +127,11 @@ export function ConceptosEditForm(props) {
           <FormField error={!!errors.precio}>
             <Label>Precio*</Label>
             <Input
-              type="number"
+              type="text"
               name="precio"
-              value={editedConcepto.precio}
-              onChange={handleInputChange}
+              value={formatCurrencyInput(editedConcepto.precio)}
+              onChange={handlePrecioChange}
+              disabled={editedConcepto.tipo === '.'}
             />
             {errors.precio && <Message negative>{errors.precio}</Message>}
           </FormField>
@@ -111,20 +143,19 @@ export function ConceptosEditForm(props) {
               name="cantidad"
               value={editedConcepto.cantidad}
               onChange={handleInputChange}
+              disabled={editedConcepto.tipo === '.'}
             />
             {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
           </FormField>
 
-          <Button primary type="submit">
+          <Button primary loading={isLoading} type="submit">
             Guardar
           </Button>
+
+          <DatosOb />
         </Form>
 
-        <div className={styles.iconDel}>
-          <div>
-            <FaTrash onClick={() => onOpenCloseConfirm(editedConcepto)} />
-          </div>
-        </div>
+        <IconDel onOpenDel={() => onOpenCloseConfirm(editedConcepto)} />
       </div>
     </>
   );

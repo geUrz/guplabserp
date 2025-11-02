@@ -1,23 +1,21 @@
+import styles from './usuario.module.css'
 import { BasicModal } from '@/layouts'
 import { Confirm, Loading, Title, UploadImg } from '@/components/Layouts'
 import { useAuth } from '@/contexts/AuthContext'
-import { FaEdit, FaImage, FaInfinity, FaMoon, FaSun, FaUser } from 'react-icons/fa'
+import { FaEdit, FaImage, FaUser } from 'react-icons/fa'
 import { Button, Image } from 'semantic-ui-react'
 import { useEffect, useState } from 'react'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { ModCuentaForm, UsuarioAddDatosImage, UsuarioFormEditPDF, UsuarioFormPDF } from '@/components/Usuario'
-import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import { getValueOrDefault, getValueOrDel } from '@/helpers'
-import { useTheme } from '@/contexts/ThemeContext'
 import axios from 'axios'
-import styles from './usuario.module.css'
 import { usePermissions } from '@/hooks'
 
 export default function Usuario() {
 
   const { user, logout, loading } = useAuth()
 
-  const { isAdmin, isSuperUser, isPremium } = usePermissions()
+  const { isAdmin, isSuperUser } = usePermissions()
 
   const [reload, setReload] = useState(false)
 

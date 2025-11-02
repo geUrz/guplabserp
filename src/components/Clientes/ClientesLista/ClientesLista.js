@@ -1,43 +1,40 @@
-import { useEffect, useState } from 'react'
+import styles from './ClientesLista.module.css'
+import { useState } from 'react'
 import { ListEmpty, Loading } from '@/components/Layouts'
 import { map, size } from 'lodash'
 import { FaUsers } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteDetalles } from '../ClienteDetalles'
 import { getValueOrDefault } from '@/helpers'
-import styles from './ClientesLista.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectClientes, selectClientesLoading } from '@/store/clientes/clienteSelectors'
+import { setCliente } from '@/store/clientes/clienteSlice'
 
 export function ClientesLista(props) {
 
-  const { isAdmin, isSuperUser, reload, onReload, clientes, onToastSuccess, onToastSuccessDel } = props
+  const { isAdmin, isSuperUser, reload, onReload, onToastSuccess, onToastSuccessDel } = props
+
+  const dispatch = useDispatch()
+  const clientes = useSelector(selectClientes)
+  const loading = useSelector(selectClientesLoading)
 
   const [showDetalles, setShowDetalles] = useState(false)
-  const [clienteSeleccionado, setClienteSeleccionado] = useState(null)
-  const [showLoading, setShowLoading] = useState(true)
 
   const onOpenDetalles = (cliente) => {
-    setClienteSeleccionado(cliente)
+    dispatch(setCliente(cliente))
     setShowDetalles(true)
   }
 
   const onCloseDetalles = () => {
-    setClienteSeleccionado(null)
+    dispatch(setCliente(null))
     setShowDetalles(false)
   }
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoading(false)
-    }, 800)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   return (
 
     <>
 
-      {showLoading ? (
+      {loading ? (
         <Loading size={45} loading={1} />
       ) : (
         size(clientes) === 0 ? (
@@ -68,7 +65,7 @@ export function ClientesLista(props) {
       )}
 
       <BasicModal title='detalles del cliente' show={showDetalles} onClose={onCloseDetalles}>
-        <ClienteDetalles isAdmin={isAdmin} isSuperUser={isSuperUser} reload={reload} onReload={onReload} cliente={clienteSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <ClienteDetalles isAdmin={isAdmin} isSuperUser={isSuperUser} reload={reload} onReload={onReload} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

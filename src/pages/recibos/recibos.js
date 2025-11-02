@@ -12,7 +12,7 @@ import { usePermissions } from '@/hooks'
 
 export default function Recibos() {
 
-  const { user, loading } = useAuth()
+  const { user, logout, loading } = useAuth()
 
   const {isAdmin, isSuperUser} = usePermissions()
  
@@ -68,7 +68,7 @@ export default function Recibos() {
   }
 
   if (loading) {
-    return <Loading size={45} loading={0} />
+    return <Loading size={45} loading={'L'} />
   }
 
   return (
@@ -90,6 +90,7 @@ export default function Recibos() {
           search={search}
           onOpenCloseSearch={onOpenCloseSearch}
           user={user}
+          logout={logout}
           reload={reload}
           onReload={onReload}
           isAdmin={isAdmin} 
@@ -106,7 +107,7 @@ export default function Recibos() {
       </BasicLayout>
 
       <BasicModal title='crear recibo' show={openForm} onClose={onOpenCloseForm}>
-        <ReciboForm reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
+        <ReciboForm user={user} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
       </BasicModal>
 
       {/* <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>

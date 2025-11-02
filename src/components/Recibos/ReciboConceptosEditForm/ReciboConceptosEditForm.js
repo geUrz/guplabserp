@@ -1,12 +1,21 @@
 import { useState } from 'react'
-import { IconClose, IconDel } from '@/components/Layouts'
+import { Confirm, IconClose, IconDel } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import axios from 'axios'
 import styles from './ReciboConceptosEditForm.module.css'
+import { formatCurrencyInput, parseCurrencyInput } from '@/helpers'
+import { useDispatch } from 'react-redux'
+import { deleteConceptoAsync, editConceptoAsync } from '@/store/recibos/reciboSlice'
 
 export function ReciboConceptosEditForm(props) {
 
-  const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props
+  const { reload, onReload, onOpenCloseEditConcep, conceptToEdit, onToastSuccess } = props
+
+  const dispatch = useDispatch()
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const [newConcept, setNewConcept] = useState(conceptToEdit || { tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
@@ -16,31 +25,35 @@ export function ReciboConceptosEditForm(props) {
   }
 
   const handleChange = (e, { name, value }) => {
-    setNewConcept((prevState) => {
-      const updatedConcept = { ...prevState, [name]: value }
+  setNewConcept((prevState) => {
+    let updatedConcept = { ...prevState, [name]: value };
 
-      if (name === 'precio' || name === 'cantidad') {
-        updatedConcept.total = calculateTotal(updatedConcept.precio, updatedConcept.cantidad)
-      }
+    if (value === '.') {
+      updatedConcept = { ...updatedConcept, concepto: '', precio: 0, cantidad: 0 };
+    } else if (name === 'precio' || name === 'cantidad') {
+      updatedConcept.total = calculateTotal(updatedConcept.precio, updatedConcept.cantidad);
+    }
 
-      return updatedConcept;
-    })
-  }
+    return updatedConcept;
+  })
+}
 
   const validateForm = () => {
     const newErrors = {}
 
-    if (!newConcept.tipo) {
-      newErrors.tipo = 'El campo es requerido'
-    }
-    if (!newConcept.concepto) {
-      newErrors.concepto = 'El campo es requerido'
-    }
-    if (!newConcept.cantidad || newConcept.cantidad <= 0) {
-      newErrors.cantidad = 'El campo es requerido'
-    }
-    if (!newConcept.precio || newConcept.precio <= 0) {
-      newErrors.precio = 'El campo es requerido'
+    if (newConcept.tipo !== '.') {
+      if (!newConcept.tipo) {
+        newErrors.tipo = 'El campo es requerido'
+      }
+      if (!newConcept.concepto) {
+        newErrors.concepto = 'El campo es requerido'
+      }
+      if (!newConcept.cantidad || newConcept.cantidad <= 0) {
+        newErrors.cantidad = 'El campo es requerido'
+      }
+      if (!newConcept.precio || newConcept.precio <= 0) {
+        newErrors.precio = 'El campo es requerido'
+      }
     }
 
     setErrors(newErrors)
@@ -48,35 +61,54 @@ export function ReciboConceptosEditForm(props) {
   }
 
   const handleUpdateConcept = async () => {
-    if (!validateForm()) {
-      return
-    }
+
+    if (!validateForm()) return
+
+    setIsLoading(true)
 
     try {
-      const response = await axios.put(`/api/recibos/conceptos?id=${newConcept.id}`, {
-        tipo: newConcept.tipo,
-        concepto: newConcept.concepto,
-        precio: newConcept.precio,
-        cantidad: newConcept.cantidad,
-        total: newConcept.total
-      })
-
-      if (response.status === 200 && response.data) {
-        onEditConcept(newConcept)
-        onReload()
-        onOpenCloseEditConcep()
-      } else {
-        console.error('Error al actualizar el concepto: Respuesta del servidor no fue exitosa', response)
-      }
+      await axios.put(`/api/recibos/conceptos?id=${newConcept.id}`, newConcept);
+      dispatch(editConceptoAsync(newConcept)); // Actualiza el concepto en Redux
+      onReload()
+      onToastSuccess()
+      onOpenCloseEditConcep()
     } catch (error) {
-      console.error('Error al actualizar el concepto:', error)
+      console.error('Error al actualizar el concepto:', error);
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const opcionesSerprod = [
     { key: 1, text: 'Servicio', value: 'Servicio' },
-    { key: 2, text: 'Producto', value: 'Producto' }
+    { key: 2, text: 'Producto', value: 'Producto' },
+    { key: 3, text: '<vacio>', value: '.' }
   ]
+
+  const handlePrecioChange = (e) => {
+    const rawValue = e.target.value;
+    const numericValue = parseCurrencyInput(rawValue)
+
+    setNewConcept((prev) => ({
+      ...prev,
+      precio: numericValue,
+    }))
+  }
+
+  const handleDeleteConcept = () => {
+    setShowConfirm(true)
+  }
+
+  const confirmDeleteConcept = async () => {
+    if (conceptToEdit?.id) {
+      dispatch(deleteConceptoAsync(conceptToEdit.id))
+      onReload()
+      onOpenCloseEditConcep()
+      setShowConfirm(false)
+    } else {
+      console.error("Concepto no encontrado o ID no válido");
+    }
+  }
 
   return (
     <>
@@ -111,10 +143,11 @@ export function ReciboConceptosEditForm(props) {
             <FormField error={!!errors.precio}>
               <Label>Precio</Label>
               <Input
-                type="number"
+                type="text"
                 name="precio"
-                value={newConcept.precio}
-                onChange={handleChange}
+                value={formatCurrencyInput(newConcept.precio)}
+                onChange={handlePrecioChange}
+                disabled={newConcept.tipo === '.'}
               />
               {errors.precio && <Message negative>{errors.precio}</Message>}
             </FormField>
@@ -125,18 +158,27 @@ export function ReciboConceptosEditForm(props) {
                 name="cantidad"
                 value={newConcept.cantidad}
                 onChange={handleChange}
+                disabled={newConcept.tipo === '.'}
               />
               {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
-          <Button primary onClick={handleUpdateConcept}>
+          <Button primary loading={isLoading} onClick={handleUpdateConcept}>
             Guardar
           </Button>
         </Form>
 
-        <IconDel setShowConfirmDel={() => onOpenCloseConfirm(newConcept)} />
+        <IconDel onOpenDel={handleDeleteConcept} />
 
       </div>
+
+      <Confirm
+        open={showConfirm}
+        onConfirm={confirmDeleteConcept}
+        onCancel={() => setShowConfirm(false)}
+        content="¿Estás seguro de eliminar el concepto?"
+      />
+
     </>
   )
 }

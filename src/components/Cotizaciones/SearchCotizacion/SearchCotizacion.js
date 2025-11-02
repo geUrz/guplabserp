@@ -16,7 +16,7 @@ export function SearchCotizacion(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (query.trim() === '') {
+      if (query.trim().length < 3) {
         setCotizaciones([])
         return
       }

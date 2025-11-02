@@ -1,86 +1,92 @@
-import { map } from 'lodash'
-import { Loading } from '@/components/Layouts'
+import styles from './RecibosListSearch.module.css'
+import { map, size } from 'lodash'
+import { ListEmpty, Loading } from '@/components/Layouts'
 import { FaFileInvoice } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { useEffect, useState } from 'react'
 import { ReciboDetalles } from '../ReciboDetalles'
-import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
-import styles from './RecibosListSearch.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectReciboLoading, selectSearchResults } from '@/store/recibos/reciboSelectors'
+import { clearSearchResults, searchRecibos, setRecibo } from '@/store/recibos/reciboSlice'
 
 export function RecibosListSearch(props) {
 
-  const { reload, onReload, recibos, onToastSuccess, onToastSuccessDel } = props
+  const { user, logout, reload, onReload, isAdmin, isSuperUser, query, onToastSuccess } = props
 
-  const [show, setShow] = useState(false)
-  const [reciboSeleccionado, setReciboSeleccionado] = useState(null)
-  const [showLoading, setShowLoading] = useState(true)
+  const [showDetalles, setShowDetalles] = useState(false)
 
-  const onOpenClose = async (cotizacion) => {
-    try {
-      const response = await axios.get(`/api/recibos/conceptos?recibo_id=${cotizacion.id}`)
-      cotizacion.conceptos = response.data
-      setReciboSeleccionado(cotizacion)
-      setShow((prevState) => !prevState)
-    } catch (error) {
-      console.error('Error al obtener los conceptos:', error)
-    }
+  const dispatch = useDispatch()
+  const recibos = useSelector(selectSearchResults)
+  const loading = useSelector(selectReciboLoading)
+  
+  const onOpenDetalles = (recibo) => {
+    dispatch(setRecibo(recibo))
+    setShowDetalles(true)
   }
 
   const onCloseDetalles = () => {
-    setVisitaSeleccionada(null)
+    dispatch(setRecibo(null))
     setShowDetalles(false)
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoading(false)
-    }, 800)
+    if (query.trim().length > 0) {
+      dispatch(searchRecibos(query))
+    }
+  }, [query, dispatch])
 
-    return () => clearTimeout(timer)
-  }, [])
+  useEffect(() => {
+    return () => {
+      dispatch(clearSearchResults())
+    }
+  }, [dispatch])
 
   return (
 
     <>
 
-      {showLoading ?
-        <Loading size={45} loading={1} /> :
-        <div className={styles.main}>
-          {map(recibos, (recibo) => (
-            <div key={recibo.id} className={styles.section} onClick={() => onOpenClose(recibo)}>
-              <div>
-                <div className={styles.column1}>
-                  <FaFileInvoice />
-                </div>
-                <div className={styles.column2}>
-                  <div>
-                    <h1>Recibo</h1>
-                    <h2>{getValueOrDefault(recibo?.recibo)}</h2>
-                  </div>
-                  <div>
-                    <h1>Cliente</h1>
-                    <h2>{getValueOrDefault(recibo?.cliente_nombre)}</h2>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      }
+      {loading ? (
+        <Loading size={45} loading={1} />
+      ) : (
+        size(recibos) === 0 ? (
+          <ListEmpty />
+        ) : (
+          <div className={styles.main}>
+            {map(recibos, (recibo) => (
+             <div key={recibo.id} className={styles.section} onClick={() => onOpenDetalles(recibo)}>
+             <div>
+               <div className={styles.column1}>
+                 <FaFileInvoice />
+               </div>
+               <div className={styles.column2}>
+                 <div>
+                   <h1>Recibo</h1>
+                   <h2>{getValueOrDefault(recibo.recibo)}</h2>
+                 </div>
+                 <div>
+                   <h1>Cliente</h1>
+                   <h2>{getValueOrDefault(recibo.cliente_nombre)}</h2>
+                 </div>
+               </div>
+             </div>
+           </div>
+            ))}
+          </div>
+        )
+      )}
 
-      <BasicModal title='detalles de la cotización' show={show} onClose={onCloseDetalles}>
-        {reciboSeleccionado && (
-          <ReciboDetalles
-            reload={reload}
-            onReload={onReload}
-            recibo={reciboSeleccionado}
-            reciboId={reciboSeleccionado}
-            onOpenClose={onOpenClose}
-            onToastSuccess={onToastSuccess}
-            onToastSuccessDel={onToastSuccessDel}
-          />
-        )}
+      <BasicModal title='detalles de la cotización' show={showDetalles} onClose={onOpenDetalles}>
+        <ReciboDetalles
+          user={user}
+          logout={logout}
+          reload={reload}
+          onReload={onReload}
+          isAdmin={isAdmin}
+          isSuperUser={isSuperUser}
+          onCloseDetalles={onCloseDetalles}
+          onToastSuccess={onToastSuccess}
+        />
       </BasicModal>
 
     </>

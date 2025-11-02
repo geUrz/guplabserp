@@ -65,7 +65,27 @@ export const {
 
 export default clientesSlice.reducer
 
-export const fetchClientes = (negocio_id) => async (dispatch) => {
+export const fetchClientes = (user) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true))
+
+    const isAdmin = user?.nivel === 'admin'
+    const negocio_id = user?.negocio_id
+
+    const url = isAdmin
+      ? '/api/clientes/clientes' 
+      : `/api/clientes/clientes?negocio_id=${negocio_id}`
+
+    const res = await axios.get(url)
+    dispatch(setClientes(res.data))
+  } catch (error) {
+    dispatch(setError(error.response?.data?.error || 'Error al cargar clientes'))
+  } finally {
+    dispatch(setLoading(false))
+  }
+} 
+
+/* export const fetchClientes = (negocio_id) => async (dispatch) => {
   try {
     dispatch(setLoading(true))
     const res = await axios.get(`/api/clientes/clientes?negocio_id=${negocio_id}`)
@@ -75,7 +95,7 @@ export const fetchClientes = (negocio_id) => async (dispatch) => {
   } finally {
     dispatch(setLoading(false))
   }
-}
+} */
 
 export const fetchClienteById = (id) => async (dispatch) => {
   try {
@@ -100,23 +120,5 @@ export const searchClientes = (search) => async (dispatch) => {
   }
 }
 
-/* export const fetchClientes = (user) => async (dispatch) => {
-  try {
-    dispatch(setLoading(true))
 
-    const isAdmin = user?.nivel === 'admin'
-    const negocio_id = user?.negocio_id
-
-    const url = isAdmin
-      ? '/api/clientes/clientes' 
-      : `/api/clientes/clientes?negocio_id=${negocio_id}`
-
-    const res = await axios.get(url)
-    dispatch(setClientes(res.data))
-  } catch (error) {
-    dispatch(setError(error.response?.data?.error || 'Error al cargar clientes'))
-  } finally {
-    dispatch(setLoading(false))
-  }
-} */
 

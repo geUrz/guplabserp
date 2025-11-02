@@ -61,15 +61,15 @@ const getToggleIVA = async () => {
 export function CotizacionDetalles(props) {
 
   const { cotizacion, cotizacionId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm, onToastSuccess, onToastSuccessDel, cotizacionSeleccionado } = props
-
+  
   const [showConcep, setShowForm] = useState(false)
   const [showEditConcep, setShowEditConcept] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [currentConcept, setCurrentConcept] = useState(null)
   const [toastSuccess, setToastSuccess] = useState(false)
 
-  const [showEditRecibo, setShowEditRecibo] = useState(false)
-  const onOpenEditCotizacion = () => setShowEditRecibo((prevState) => !prevState)
+  const [showEditCotizacion, setShowEditCotizacion] = useState(false)
+  const onOpenEditCotizacion = () => setShowEditCotizacion((prevState) => !prevState)
 
   const [showConfirmDel, setShowConfirmDel] = useState(false)
   const onOpenCloseConfirmDel = () => setShowConfirmDel((prevState) => !prevState)
@@ -402,7 +402,7 @@ export function CotizacionDetalles(props) {
 
       </div>
 
-      <BasicModal title='modificar la cotización' show={showEditRecibo} onClose={onOpenEditCotizacion}>
+      <BasicModal title='modificar la cotización' show={showEditCotizacion} onClose={onOpenEditCotizacion}>
         <CotizacionEditForm reload={reload} onReload={onReload} cotizacionData={cotizacionData} actualizarCotizacion={actualizarCotizacion} onOpenEditCotizacion={onOpenEditCotizacion} onToastSuccess={onToastSuccess} />
       </BasicModal>
 

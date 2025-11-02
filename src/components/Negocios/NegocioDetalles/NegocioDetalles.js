@@ -57,7 +57,7 @@ export function NegocioDetalles(props) {
               <h2>{getValueOrDefault(negocio?.direccion)}</h2>
             </div>
             <div>
-              <h1>Email</h1>
+              <h1>Correo</h1>
               <h2>{getValueOrDefault(negocio?.email)}</h2>
             </div>
           </div>

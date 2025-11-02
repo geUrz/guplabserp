@@ -86,7 +86,7 @@ export function OrdenesdeservicioForm(props) {
     const folio = genOSId(4)
 
     try {
-      await axios.post('/api/ordenesdeserv/ordenesdeserv', {
+      await axios.post('/api/ordenserv/ordenserv', {
         usuario_id: user.id,
         folio,
         cliente_id,

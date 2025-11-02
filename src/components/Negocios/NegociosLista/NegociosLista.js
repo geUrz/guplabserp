@@ -7,7 +7,7 @@ import { NegocioDetalles } from '../NegocioDetalles'
 import { getValueOrDefault } from '@/helpers'
 import styles from './NegociosLista.module.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectNegocios } from '@/store/negocios/negocioSelectors'
+import { selectNegocios, selectNegociosLoading } from '@/store/negocios/negocioSelectors'
 import { setNegocio } from '@/store/negocios/negocioSlice'
 
 export function NegociosLista(props) {
@@ -16,6 +16,7 @@ export function NegociosLista(props) {
 
   const dispatch = useDispatch()
   const negocios = useSelector(selectNegocios)
+  const loading = useSelector(selectNegociosLoading)
   
   const [showDetalles, setShowDetalles] = useState(false)
 
@@ -33,7 +34,7 @@ export function NegociosLista(props) {
 
     <>
 
-      {!negocios ? (
+      {loading ? (
         <Loading size={45} loading={1} />
       ) : (
         size(negocios) === 0 ? (

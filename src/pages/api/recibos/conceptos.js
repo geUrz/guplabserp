@@ -8,7 +8,8 @@ export default async function handler(req, res) {
             const [result] = await connection.query(
                 'INSERT INTO conceptosrec (recibo_id, tipo, concepto, precio, cantidad, total ) VALUES (?, ?, ?, ?, ?, ?)',
                 [recibo_id, tipo, concepto, precio, cantidad, total ]
-            );
+            )
+            
             res.status(201).json({ id: result.insertId })
         } catch (error) {
             console.error(error)

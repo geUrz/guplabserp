@@ -7,7 +7,7 @@ import { formatCurrencyInput, parseCurrencyInput } from '@/helpers'
 
 export function CotizacionConceptosForm(props) {
 
-  const { reload, onReload, cotizacionId, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
+  const { reload, onReload, cotizacionId, onAddConcept, onOpenCloseConcep } = props
 
   const [isLoading, setIsLoading] = useState(false)
 

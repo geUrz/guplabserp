@@ -1,36 +1,27 @@
+import styles from './ClienteEditForm.module.css'
 import { DatosOb, IconClose } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
-import styles from './ClienteEditForm.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectCliente } from '@/store/clientes/clienteSelectors'
+import { updateCliente } from '@/store/clientes/clienteSlice'
 
 export function ClienteEditForm(props) {
 
-  const { reload, onReload, cliente, onOpenCloseEdit, onToastSuccess } = props
+  const { reload, onReload, tag, fetchById, onOpenCloseEdit, onToastSuccess } = props
+
+  const dispatch = useDispatch()
+  const cliente = useSelector(selectCliente)
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const [clientes, setClientes] = useState([])
-
-  useEffect(() => {
-    const fetchClientes = async () => {
-      try {
-        const response = await axios.get('/api/clientes/clientes') 
-        setClientes(response.data) 
-      } catch (error) {
-        console.error('Error al obtener los clientes:', error)
-      }
-    }
-
-    fetchClientes()
-  }, [reload])
-
   const [formData, setFormData] = useState({
-    nombre: cliente.nombre,
-    contacto: cliente.contacto,
-    direccion: cliente.direccion,
-    cel: cliente.cel,
-    email: cliente.email
+    nombre: cliente?.nombre || '',
+    contacto: cliente?.contacto || '',
+    direccion: cliente?.direccion || '',
+    cel: cliente?.cel || '',
+    email: cliente?.email || ''
   })
 
   const [errors, setErrors] = useState({})
@@ -68,9 +59,15 @@ export function ClienteEditForm(props) {
     setIsLoading(true)
 
     try {
-      await axios.put(`/api/clientes/clientes?id=${cliente.id}`, {
+      await axios.put(`/api/clientes/clientes?id=${cliente?.id}`, {
         ...formData
       })
+
+      const res = await axios.get(`/api/clientes/clientes?id=${cliente?.id}`)
+      dispatch(updateCliente(res.data))
+
+      dispatch(fetchById(tag?.id))
+
       onReload()
       onOpenCloseEdit()
       onToastSuccess()
