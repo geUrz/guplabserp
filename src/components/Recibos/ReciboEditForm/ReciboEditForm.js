@@ -12,6 +12,8 @@ import { selectRecibo } from '@/store/recibos/reciboSelectors'
 import { selectClientes } from '@/store/clientes/clienteSelectors'
 import { fetchClientes } from '@/store/clientes/clienteSlice'
 import { setRecibo, updateRecibo } from '@/store/recibos/reciboSlice'
+import { selectNegocios } from '@/store/negocios/negocioSelectors'
+import { fetchNegocios } from '@/store/negocios/negocioSlice'
 
 export function ReciboEditForm(props) {
 
@@ -63,6 +65,16 @@ export function ReciboEditForm(props) {
 
   const handleDropdownChange = (e, { value }) => {
     setFormData({ ...formData, cliente_id: value })
+  }
+
+  const negocios = useSelector(selectNegocios)
+  
+    useEffect(() => {
+      dispatch(fetchNegocios())
+    }, [dispatch, reload, user])
+
+  const handleDropdownChangeNeg = (e, { value }) => {
+    setFormData({ ...formData, negocio_id: value })
   }
 
   const handleSubmit = async (e) => {
@@ -146,6 +158,22 @@ export function ReciboEditForm(props) {
             <AddCliente onOpenCloseClienteForm={onOpenCloseClienteForm} />
 
             {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
+          </FormField>
+          <FormField>
+            <Label>Negocio</Label>
+            <Dropdown
+              placeholder='Seleccionar'
+              fluid
+              selection
+              options={negocios.map(negocio => ({
+                key: negocio.id,
+                text: negocio.negocio,
+                value: negocio.id
+              }))}
+              value={formData.negocio_id}
+              onChange={handleDropdownChangeNeg}
+            />
+
           </FormField>
         </FormGroup>
         <Button primary loading={isLoading} onClick={handleSubmit}>

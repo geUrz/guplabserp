@@ -145,7 +145,7 @@ app.prepare().then(() => {
     return handle(req, res);
   });
 
-  const PORT = 3002;
+  const PORT = 3003;
   console.log('NODE_ENV:', process.env.NODE_ENV);
 
   httpServer.listen(PORT, '0.0.0.0', (err) => { 

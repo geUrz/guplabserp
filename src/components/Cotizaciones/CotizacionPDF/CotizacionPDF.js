@@ -59,8 +59,8 @@ export function CotizacionPDF(props) {
       }
     )
 
-    /* const logoImg = 'img/logo.png' */
-    const logoImg = 'img/logo1.webp' 
+    const logoImg = 'img/logo.png' 
+    /* const logoImg = 'img/logo1.webp'   */
     const logoWidth = 58
     const logoHeight = 16
     const marginRightLogo = 12
@@ -78,7 +78,7 @@ export function CotizacionPDF(props) {
     const font2 = 10
     const font3 = 9
 
-    /* doc.setFontSize(`${font2}`)
+    doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('CLICKNET', 15, 23)
     doc.setFontSize(`${font2}`)
@@ -92,7 +92,7 @@ export function CotizacionPDF(props) {
     doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('RFC: EIEJ8906244J3', 15, 47)   */  
+    doc.text('RFC: EIEJ8906244J3', 15, 47)   
 
     doc.setFontSize(`${font2}`)
     doc.setFont("helvetica", "bold")

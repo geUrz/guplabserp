@@ -3,12 +3,14 @@ import usuarioReducer from './usuarios/usuarioSlice'
 import reciboReducer from './recibos/reciboSlice'
 import clientesReducer from './clientes/clienteSlice'
 import negocioReducer from './negocios/negocioSlice'
+import ordenservsReducer from './ordenserv/ordenservSlice'
 
 export const store = configureStore({
   reducer: {
     usuarios: usuarioReducer,
     recibo: reciboReducer,
     clientes: clientesReducer,
-    negocios: negocioReducer
+    negocios: negocioReducer,
+    ordenservs: ordenservsReducer
   },
 })

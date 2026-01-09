@@ -1,9 +1,9 @@
+import styles from './ReciboPDF.module.css'
 import { BiSolidFilePdf } from 'react-icons/bi'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
-import styles from './ReciboPDF.module.css'
 import { useEffect, useState } from 'react'
 import { Loading } from '@/components/Layouts'
 import { useSelector } from 'react-redux'
@@ -19,6 +19,10 @@ export function ReciboPDF() {
   const [discountValue, setDiscountValue] = useState(0)
   
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    setDiscountValue(discount);
+  }, [discount]);
 
   const calcularTotales = (discount) => {
     const subtotal = recibo?.conceptos?.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0) || 0
@@ -54,7 +58,8 @@ export function ReciboPDF() {
       }
     )
 
-    const logoImg = 'img/logo.png'
+    //const logoImg = 'img/logo.png'
+    const logoImg = 'img/logo1.webp'
     const logoWidth = 58
     const logoHeight = 16
     const marginRightLogo = 12
@@ -76,7 +81,7 @@ export function ReciboPDF() {
       return str.replace(/\b\w/g, char => char.toUpperCase());
     }
 
-      doc.setFontSize(`${font2}`)
+      /* doc.setFontSize(`${font2}`)
       doc.setTextColor(0, 0, 0)
       doc.text('CLICKNET', 15, 23)
       doc.setFontSize(`${font2}`)
@@ -90,7 +95,7 @@ export function ReciboPDF() {
       doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
       doc.setFontSize(`${font3}`)
       doc.setTextColor(120, 120, 120)
-      doc.text('RFC: EIEJ8906244J3', 15, 47)  
+      doc.text('RFC: EIEJ8906244J3', 15, 47)   */
 
     doc.setFontSize(`${font2}`)
     doc.setFont("helvetica", "bold")

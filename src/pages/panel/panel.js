@@ -35,7 +35,7 @@ export default function Panel() {
               <FaFileContract />
               <h1>Cotizaciones</h1>
             </Link>
-            <Link href='ordenesdeservicio' className={styles.boxContainer}>
+            <Link href='ordenserv' className={styles.boxContainer}>
               <FaFileAlt />
               <h1>Órdenes de Servicio</h1>
             </Link>

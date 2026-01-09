@@ -24,7 +24,7 @@ export function ReportePDF(props) {
       format: 'a4'
     })
 
-    /* const addFooterText = () => {
+    const addFooterText = () => {
       const text = 'www.clicknetmx.com'
       const textWidth = doc.getTextWidth(text)
       const x = (pageWidth - textWidth) / 2
@@ -32,9 +32,9 @@ export function ReportePDF(props) {
       doc.setFontSize(8)
       doc.setTextColor(120, 120, 120)
       doc.text(text, x, y)
-    } */
+    } 
 
-    const logoImg = 'img/logo1.webp'
+    const logoImg = 'img/logo.png'
     const logoWidth = 58
     const logoHeight = 16
     const marginRightLogo = 12
@@ -53,7 +53,7 @@ export function ReportePDF(props) {
     const font2 = 10
     const font3 = 9
 
-    /* doc.setFontSize(`${font2}`)
+    doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
     doc.text('CLICKNET', 15, 23)
     doc.setFontSize(`${font2}`)
@@ -67,7 +67,7 @@ export function ReportePDF(props) {
     doc.text('Juan Roberto Espinoza Espinoza', 15, 43)
     doc.setFontSize(`${font3}`)
     doc.setTextColor(120, 120, 120)
-    doc.text('RFC: EIEJ8906244J3', 15, 47)   */
+    doc.text('RFC: EIEJ8906244J3', 15, 47)   
 
     doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
@@ -219,7 +219,7 @@ export function ReportePDF(props) {
         margin: { top: 0, left: marginMain, bottom: 0, right: marginMain },
       })
 
-      addFooterText()
+      //addFooterText()
 
     }
 

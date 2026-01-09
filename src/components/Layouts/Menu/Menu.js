@@ -58,7 +58,7 @@ export function Menu() {
             <FaFileContract />
             <h1>Cotizaciones</h1>
           </Link>
-          <Link href='ordenesdeservicio'>
+          <Link href='ordenserv'>
             <FaFileAlt />
             <h1>Órdenes de servicio</h1>
           </Link>

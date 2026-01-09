@@ -2,10 +2,10 @@
   "name": "GubLabsERP",
   "short_name": "GubLabsERP",
   "description": "Una aplicación integral diseñada para facilitar la gestión de documentos empresariales, permitiendo la creación y generación de recibos, reportes, órdenes de servicio y cotizaciones de manera eficiente. Además, permite agregar clientes, gestionar usuarios y asociar imágenes a los documentos. Todos los archivos generados pueden ser convertidos fácilmente a PDF, ofreciendo una solución práctica para la organización y el manejo de documentos en tu negocio.",
-  "start_url": "/join/signin",
+  "start_url": "/",
   "display": "fullscreen",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#2A384A",
+  "theme_color": "#2A384A",
   "icons": [
     {
       "src": "/icons/erp-192x192.png",

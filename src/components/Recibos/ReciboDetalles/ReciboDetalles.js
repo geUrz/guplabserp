@@ -26,12 +26,15 @@ export function ReciboDetalles(props) {
   const cliente = useSelector(selectCliente)
 
   useEffect(() => {
-  if (!cliente || cliente.id !== recibo.cliente_id) {
-    const clienteId = recibo.cliente_id;
-    dispatch(fetchClienteById(clienteId));
-  }
-  }, [cliente, dispatch, recibo.cliente_id]);
+    if (!recibo || !recibo.cliente_id) {
+      return
+    }
 
+    if (!cliente || cliente.id !== recibo.cliente_id) {
+      const clienteId = recibo.cliente_id
+      dispatch(fetchClienteById(clienteId))
+    }
+  }, [cliente, dispatch, recibo?.cliente_id, recibo?.id])
 
   const [showConcep, setShowForm] = useState(false)
   const [showEditConcep, setShowEditConcept] = useState(false)
@@ -75,7 +78,7 @@ export function ReciboDetalles(props) {
   useEffect(() => {
     const fetchDiscountValue = async () => {
       try {
-        const response = await axios.get(`/api/recibos/discount?id=${recibo.id}`)
+        const response = await axios.get(`/api/recibos/discount?id=${recibo?.id}`)
         const discountValue = response.data?.discount || 0
         setDiscount(discountValue)
       } catch (error) {
@@ -83,14 +86,14 @@ export function ReciboDetalles(props) {
       }
     }
 
-    if (recibo.id) {
+    if (recibo?.id) {
       fetchDiscountValue()
     }
-  }, [recibo.id])
+  }, [recibo?.id])
 
   const saveDescuento = async (discount) => {
     try {
-      await axios.put(`/api/recibos/discount?id=${recibo.id}`, {
+      await axios.put(`/api/recibos/discount?id=${recibo?.id}`, {
         discount: discount,
       })
     } catch (error) {
@@ -99,22 +102,25 @@ export function ReciboDetalles(props) {
   }
 
   const handleDescuentoChange = (e) => {
-  const newDescuento = e.target.value;
+    const newDescuento = e.target.value;
 
-  if (newDescuento === '') {
-    setDiscount('');
-  } else {
-    const validNumber = parseFloat(newDescuento);
-    if (!isNaN(validNumber) && validNumber >= 0 && validNumber <= 100) {
-      setDiscount(validNumber);
-      dispatch(updateDiscount(validNumber))
-      saveDescuento(validNumber)
+    if (newDescuento === '') {
+      setDiscount(0); // Si el input está vacío, se pone 0
+      dispatch(updateDiscount(0)) // Actualizar el store global
+      saveDescuento(0) // Guardar 0 en la base de datos
     } else {
-      setDiscount(0);
-      dispatch(updateDiscount(0))
+      const validNumber = parseFloat(newDescuento);
+      if (!isNaN(validNumber) && validNumber >= 0 && validNumber <= 100) {
+        setDiscount(validNumber);
+        dispatch(updateDiscount(validNumber)) // Actualizar el store global
+        saveDescuento(validNumber) // Guardar el valor en la base de datos
+      } else {
+        setDiscount(0);
+        dispatch(updateDiscount(0)) // Actualizar el store global
+        saveDescuento(0) // Guardar 0 en la base de datos si el valor es inválido
+      }
     }
   }
-}
 
   const [nota, setNota] = useState(recibo?.nota || '')
   const maxCharacters = 280
@@ -127,10 +133,10 @@ export function ReciboDetalles(props) {
   }
 
   useEffect(() => {
-    if (recibo.id && nota !== recibo.nota) {
-      dispatch(saveReciboNotaAsync({ id: recibo.id, notaValue: nota }))
+    if (recibo?.id && nota !== recibo?.nota) {
+      dispatch(saveReciboNotaAsync({ id: recibo?.id, notaValue: nota }))
     }
-  }, [nota, recibo.id, dispatch])
+  }, [nota, recibo?.id, dispatch])
 
   const handleDelete = async () => {
     if (!recibo?.id) {
@@ -139,7 +145,7 @@ export function ReciboDetalles(props) {
     }
 
     try {
-      await axios.delete(`/api/recibos/recibos?id=${recibo.id}`)
+      await axios.delete(`/api/recibos/recibos?id=${recibo?.id}`)
       onCloseDetalles()
       onReload()
       onToastSuccessDel()
@@ -153,24 +159,24 @@ export function ReciboDetalles(props) {
   useEffect(() => {
     const fetchToggleIVA = async () => {
       try {
-        const response = await axios.get(`/api/recibos/iva?id=${recibo.id}`)
+        const response = await axios.get(`/api/recibos/iva?id=${recibo?.id}`)
         setToggleIVA(response.data?.iva_enabled || false)
       } catch (error) {
         console.error('Error al obtener el estado del IVA:', error)
       }
     }
 
-    if (recibo.id) {
+    if (recibo?.id) {
       fetchToggleIVA()
     }
-  }, [recibo.id])
+  }, [recibo?.id])
 
   const onIVA = async () => {
     const newState = !toggleIVA;
     setToggleIVA(newState)
 
     try {
-      await axios.put(`/api/recibos/iva?id=${recibo.id}`, {
+      await axios.put(`/api/recibos/iva?id=${recibo?.id}`, {
         iva_enabled: newState,
         iva: ivaValue,
       })
@@ -186,7 +192,7 @@ export function ReciboDetalles(props) {
   useEffect(() => {
     const fetchIvaValue = async () => {
       try {
-        const response = await axios.get(`/api/recibos/recibos?id=${recibo.id}`)
+        const response = await axios.get(`/api/recibos/recibos?id=${recibo?.id}`)
         const iva = response.data?.iva || 16
         setIvaValue(iva)
       } catch (error) {
@@ -194,14 +200,14 @@ export function ReciboDetalles(props) {
       }
     }
 
-    if (recibo.id) {
+    if (recibo?.id) {
       fetchIvaValue()
     }
-  }, [recibo.id])
+  }, [recibo?.id])
 
   const saveIvaValue = async (newIvaValue) => {
     try {
-      await axios.put(`/api/recibos/iva?id=${recibo.id}`, {
+      await axios.put(`/api/recibos/iva?id=${recibo?.id}`, {
         iva: newIvaValue,
         iva_enabled: 1,
       })
@@ -220,7 +226,7 @@ export function ReciboDetalles(props) {
     const newIvaValue = e.target.value
 
     if (newIvaValue === '') {
-      setIvaValue('')
+      setIvaValue('') // Si el input está vacío, se pone vacío
     } else if (/^\d{0,2}$/.test(newIvaValue) && newIvaValue >= 0 && newIvaValue <= 100) {
 
       setIvaValue(newIvaValue)
@@ -239,18 +245,18 @@ export function ReciboDetalles(props) {
   const [discountValue, setDiscountValue] = useState(0)
 
   const calcularTotales = (discount) => {
-  const subtotal = recibo?.conceptos?.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0) || 0
-  const descuentoValor = (discount / 100) * subtotal
-  const subtotalConDescuento = subtotal - descuentoValor
-  const iva = subtotalConDescuento * (ivaValue / 100)
-  const total = toggleIVA ? subtotalConDescuento + iva : subtotalConDescuento
+    const subtotal = recibo?.conceptos?.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0) || 0
+    const descuentoValor = (discount / 100) * subtotal
+    const subtotalConDescuento = subtotal - descuentoValor
+    const iva = subtotalConDescuento * (ivaValue / 100)
+    const total = toggleIVA ? subtotalConDescuento + iva : subtotalConDescuento
 
-  if (descuentoValor !== discountValue) {
-    setDiscountValue(descuentoValor)
+    if (descuentoValor !== discountValue) {
+      setDiscountValue(descuentoValor)
+    }
+
+    return { subtotal, iva, total }
   }
-
-  return { subtotal, iva, total }
-}
 
   const { subtotal, iva, total } = calcularTotales(discount)
 
@@ -368,7 +374,6 @@ export function ReciboDetalles(props) {
               <h1>{formatCurrency('0')}</h1>
             ) : (
               <h1>{formatCurrency(iva)}</h1>
-                
             )}
             <div className={styles.total}>
               <h1>{formatCurrency(total)}</h1>

@@ -1,4 +1,4 @@
-import { FaCheckCircle } from 'react-icons/fa'
+import { FaTrash } from 'react-icons/fa'
 import styles from './ToastDelete.module.css'
 import { useEffect } from 'react';
 
@@ -18,7 +18,7 @@ export function ToastDelete(props) {
 
     <div className={styles.section}>
       <div className={styles.toast}>
-        <FaCheckCircle />
+        <FaTrash />
       </div>
     </div>
 

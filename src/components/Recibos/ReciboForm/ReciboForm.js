@@ -1,3 +1,5 @@
+// ReciboForm.js actualizado con integración completa de discount e IVA como en ReciboDetalles
+
 import styles from './ReciboForm.module.css'
 import { AddCliente, Confirm, DatosOb, IconClose, IconPlus, RowHeadModal, ToastSuccess, Toggle } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
@@ -12,6 +14,7 @@ import { ConceptosEditForm } from '../ConceptosEditForm'
 import { fetchClientes } from '@/store/clientes/clienteSlice'
 import { selectClientes } from '@/store/clientes/clienteSelectors'
 import { useDispatch, useSelector } from 'react-redux'
+import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 
 export function ReciboForm(props) {
 
@@ -75,68 +78,56 @@ export function ReciboForm(props) {
   const [cotizaciones, setCotizaciones] = useState([])
   const [recibo, setRecibo] = useState('')
   const [conceptos, setConceptos] = useState([])
-  const [nuevoConcepto, setNuevoConcepto] = useState({
-    tipo: '',
-    concepto: '',
-    precio: '',
-    cantidad: ''
-  })
 
   const [toggleIVA, setToggleIVA] = useState(false)
-  
   const [ivaValue, setIvaValue] = useState(16)
+
+  // --------- NUEVO: ESTADO DE DISCOUNT ---------
+  const [discount, setDiscount] = useState(0)
+  const [discountValue, setDiscountValue] = useState(0)
+  // ---------------------------------------------
 
   const [errors, setErrors] = useState({})
 
   const validarForm = () => {
     const newErrors = {}
 
-    if (!cliente_id) {
-      newErrors.cliente_id = 'El campo es requerido'
-    }
-
-    if (!recibo) {
-      newErrors.recibo = 'El campo es requerido'
-    }
+    if (!cliente_id) newErrors.cliente_id = 'El campo es requerido'
+    if (!recibo) newErrors.recibo = 'El campo es requerido'
 
     setErrors(newErrors)
-
     return Object.keys(newErrors).length === 0
   }
 
-  // Guardar el valor de iva_enabled cuando el toggle cambia
   const onIVA = () => {
-    setToggleIVA(prevState => {
-      const newState = !prevState;
-      return newState;
-    })
+    setToggleIVA(prevState => !prevState)
   }
 
   const crearRecibo = async (e) => {
     e.preventDefault()
 
-    if (!validarForm()) {
-      return
-    }
+    if (!validarForm()) return
 
     setIsLoading(true)
 
     const folio = genRECId(4)
-
     const folioRef = cotizaciones.find(cot => cot.id === cotizacion)?.folio || null
 
     try {
-      // Crear el recibo con iva_enabled
       const res = await axios.post('/api/recibos/recibos', {
         usuario_id: user.id,
         folio,
         cliente_id,
         recibo,
         folioref: folioRef,
-        iva_enabled: toggleIVA,  // Guardamos el estado de IVA
-        iva: ivaValue
+        iva_enabled: toggleIVA,
+        iva: ivaValue,
+        // -------- NUEVO: GUARDAR DISCOUNT --------
+        discount: discount
       })
+
       const reciboId = res.data.id
+
       await Promise.all(conceptos.map(concepto =>
         axios.post('/api/recibos/conceptos', {
           recibo_id: reciboId,
@@ -148,6 +139,12 @@ export function ReciboForm(props) {
         })
       ))
 
+      await axios.post('/api/notificaciones', {
+        title: 'Recibo creado',
+        body: `${recibo}`,
+        url: '/'
+      })
+
       setRecibo('')
       setCliente('')
       setConceptos([])
@@ -156,8 +153,8 @@ export function ReciboForm(props) {
       onReload()
       onOpenCloseForm()
       onToastSuccess()
+
     } catch (error) {
-      setIsLoading(false)
       console.error('Error al crear el recibo:', error)
     } finally {
       setIsLoading(false)
@@ -194,12 +191,6 @@ export function ReciboForm(props) {
         try {
           const response = await axios.get(`/api/cotizaciones/conceptos?cotizacion_id=${cotizacion}`)
           setConceptos(response.data)
-          setNuevoConcepto({
-            tipo: '',
-            concepto: '',
-            precio: '',
-            cantidad: ''
-          })
 
           const cotizacionResponse = await axios.get(`/api/cotizaciones/cotizaciones?id=${cotizacion}`)
           setRecibo(cotizacionResponse.data?.cotizacion || '')
@@ -213,14 +204,23 @@ export function ReciboForm(props) {
   }, [cotizacion])
 
   const calcularTotales = () => {
-    const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
-    const ivaDecimal = toggleIVA ? ivaValue / 100 : 0 // Solo calcular si está activado
-    const iva = subtotal * ivaDecimal
-    const total = subtotal + iva
-    return { subtotal, iva, total }
+    const subtotal = conceptos.reduce(
+      (acc, curr) => acc + curr.cantidad * curr.precio,
+      0
+    )
+
+    const descuentoImporte = subtotal * (discount / 100)
+    const subtotalConDesc = subtotal - descuentoImporte
+
+    const ivaDecimal = toggleIVA ? ivaValue / 100 : 0
+    const iva = subtotalConDesc * ivaDecimal
+
+    const total = subtotalConDesc + iva
+
+    return { subtotal, descuentoImporte, iva, total }
   }
 
-  const { subtotal, iva, total } = calcularTotales()
+  const { subtotal, descuentoImporte, iva, total } = calcularTotales()
 
   const handleIvaChange = (e) => {
     let value = e.target.value
@@ -228,9 +228,7 @@ export function ReciboForm(props) {
   }
 
   return (
-
     <>
-
       <IconClose onOpenClose={onOpenCloseForm} />
 
       {toastSuccessCliente && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccessCliente(false)} />}
@@ -238,16 +236,14 @@ export function ReciboForm(props) {
       <div className={styles.main}>
         <Form>
           <FormGroup widths='equal'>
-            <FormField>
 
+            <FormField>
               <div className={styles.toggleCot}>
                 <h1>Cotización</h1>
-                <div onClick={onToggle}>
-                  <Toggle />
-                </div>
+                <div onClick={onToggle}><Toggle /></div>
               </div>
 
-              {toggle ?
+              {toggle && (
                 <Dropdown
                   placeholder='Seleccionar'
                   fluid
@@ -255,49 +251,40 @@ export function ReciboForm(props) {
                   options={cotizaciones.map(cot => ({ key: cot.id, text: cot.folio, value: cot.id }))}
                   value={cotizacion}
                   onChange={(e, { value }) => setCotizacion(value)}
-                /> : null
-              }
-
+                />
+              )}
             </FormField>
+
             <FormField error={!!errors.recibo}>
               <Label>Recibo*</Label>
-              <Input
-                type="text"
-                value={recibo || ''}
-                onChange={(e) => setRecibo(e.target.value)}
-              />
+              <Input type="text" value={recibo || ''} onChange={(e) => setRecibo(e.target.value)} />
               {errors.recibo && <Message negative>{errors.recibo}</Message>}
             </FormField>
+
             <FormField error={!!errors.cliente_id}>
               <Label>Cliente*</Label>
               <Dropdown
                 placeholder='Seleccionar'
                 fluid
                 selection
-                options={clientes.map(cliente => ({
-                  key: cliente.id,
-                  text: cliente.nombre,
-                  value: cliente.id
-                }))}
+                options={clientes.map(cliente => ({ key: cliente.id, text: cliente.nombre, value: cliente.id }))}
                 value={cliente_id}
                 onChange={(e, { value }) => setCliente(value)}
               />
-
               <AddCliente onOpenCloseClienteForm={onOpenCloseClienteForm} />
-
               {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
             </FormField>
+
           </FormGroup>
         </Form>
 
         <div className={styles.section}>
           <RowHeadModal rowMain />
-          
+
           {conceptos.map((concepto, index) => (
             <div key={index} className={styles.rowMap} onClick={() => onOpenEditConcep(index)}>
               <h1>{concepto.tipo}</h1>
               <h1>{concepto.concepto}</h1>
-
               {concepto.tipo !== '.' ? (
                 <>
                   <h1>{formatCurrency(concepto.precio)}</h1>
@@ -305,69 +292,97 @@ export function ReciboForm(props) {
                   <h1>{formatCurrency(concepto.total)}</h1>
                 </>
               ) : (
-                <>
-                  <h1></h1>
-                  <h1></h1>
-                  <h1></h1>
-                </>
+                <><h1></h1><h1></h1><h1></h1></>
               )}
             </div>
           ))}
 
           <IconPlus onOpenCloseConcep={onOpenCloseConcep} />
 
-          <div className={styles.box3}>
-            <div className={styles.box3_1}>
-              <div className={styles.box3_1_1}>
-                <div>
-                  <h2>Subtotal:</h2>
-                </div>
-                <div>
-                  <h2>
-                    {toggleIVA ? formatCurrency(subtotal) : '$0.00'}</h2>
-                </div>
-              </div>
-              <div className={styles.box3_1_2}>
-                <div onClick={onIVA}>
-                  <Toggle />
-                  <h2>IVA</h2>
-                </div>
+          <div className={styles.sectionTotal}>
+            <div className={styles.sectionTotal_1}>
+              {/* SUBTOTAL */}
+              <h1>Subtotal:</h1>
 
+              {/* DESCUENTO */}
+              <div className={styles.descON}>
                 <Form>
                   <FormGroup>
                     <FormField>
                       <Input
-                        value={ivaValue}
-                        onChange={handleIvaChange}
-                        className={styles.ivaInput}
+                        value={discount}
+                        onChange={(e) => {
+                          let val = e.target.value;
+                          if (val === "") setDiscount(0);
+                          else if (!isNaN(val) && val >= 0 && val <= 100) setDiscount(parseFloat(val));
+                        }}
+                        className={styles.descInput}
                       />
                     </FormField>
                   </FormGroup>
                 </Form>
-
-                <div>
-                  <h2>
-                    {toggleIVA ? formatCurrency(iva) : "$0.00"}
-                  </h2>
-                </div>
-
+                <h1>%</h1>
+                <h1>Desc:</h1>
               </div>
-              <div className={styles.box3_1_3}>
-                <div>
-                  <h2>Total:</h2>
+
+              {/* IVA OFF */}
+              {!toggleIVA ? (
+                <div className={styles.toggleOFF} onClick={onIVA}>
+                  <BiSolidToggleLeft />
+                  <h1>IVA:</h1>
                 </div>
-                <div>
-                  <h2>{formatCurrency(total)}</h2>
+              ) : (
+                /* IVA ON */
+                <div className={styles.toggleON}>
+                  <Form>
+                    <FormGroup>
+                      <FormField>
+                        <Input
+                          value={ivaValue}
+                          onChange={handleIvaChange}
+                          className={styles.ivaInput}
+                        />
+                      </FormField>
+                    </FormGroup>
+                  </Form>
+                  <h1>%</h1>
+                  <BiSolidToggleRight onClick={onIVA} />
+                  <h1>IVA:</h1>
                 </div>
+              )}
+
+              {/* TOTAL */}
+              <div className={styles.total}>
+                <h1>Total:</h1>
+              </div>
+            </div>
+
+            <div className={styles.sectionTotal_2}>
+              {/* SUBTOTAL */}
+              <h1>{formatCurrency(subtotal)}</h1>
+
+              {/* DESCUENTO */}
+              <h1>- {formatCurrency(descuentoImporte)}</h1>
+
+              {/* IVA */}
+              {!toggleIVA ? (
+                <h1>{formatCurrency(0)}</h1>
+              ) : (
+                <h1>{formatCurrency(iva)}</h1>
+              )}
+
+              {/* TOTAL */}
+              <div className={styles.total}>
+                <h1>{formatCurrency(total)}</h1>
               </div>
             </div>
           </div>
+
         </div>
 
         <Button primary loading={isLoading} onClick={crearRecibo}>Crear</Button>
 
         <DatosOb />
-
       </div>
 
       <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>
@@ -382,10 +397,7 @@ export function ReciboForm(props) {
         <ConceptosEditForm
           concepto={conceptoEdit}
           onSave={(updatedConcepto) => {
-
-            const updatedConceptos = conceptos.map((concepto) =>
-              concepto === conceptoEdit ? updatedConcepto : concepto
-            )
+            const updatedConceptos = conceptos.map((concepto) => concepto === conceptoEdit ? updatedConcepto : concepto)
             setConceptos(updatedConceptos)
           }}
           onCloseEditConcep={onCloseEditConcep}
@@ -401,6 +413,5 @@ export function ReciboForm(props) {
       />
 
     </>
-
   )
 }

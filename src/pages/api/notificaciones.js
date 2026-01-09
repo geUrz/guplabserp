@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     const payload = JSON.stringify({
       title,
       body,
-      icon: '/icons/click-192x192.png',
+      icon: '/icons/erp-192x192.png',
       url: notificationUrl
     });
 

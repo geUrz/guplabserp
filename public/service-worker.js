@@ -40,7 +40,7 @@ self.addEventListener('push', function(event) {
     })
   );
 
-  let notificationData = { title: 'Notificación', body: 'Nuevo mensaje', icon: '/icons/click-192x192.png' };
+  let notificationData = { title: 'Notificación', body: 'Nuevo mensaje', icon: '/icons/erp-192x192.png' };
 
   if (event.data) {
     try {
@@ -53,8 +53,8 @@ self.addEventListener('push', function(event) {
   const title = notificationData.title || 'Nueva Notificación';
   const options = {
     body: notificationData.body || 'Tienes una nueva notificación',
-    icon: notificationData.icon || '/icons/click-192x192.png',
-    badge: notificationData.badge || '/badge.png',
+    icon: notificationData.icon || '/icons/erp-192x192.png',
+    badge: notificationData.badge || '/erp-192x192.png',
   };
 
   event.waitUntil(

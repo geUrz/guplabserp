@@ -58,6 +58,7 @@
 }
 
 .toggleOFF, .toggleON, .descON{
+  height: 20px;
   font-size: 30px;
   display: flex;
   align-items: center;
@@ -76,7 +77,8 @@
 
 .ivaInput, .descInput{
   margin: 0 4px;
-  width: 38px !important;
+  width: 36px !important;
+  height: 28px !important;
 }
 
 .sectionTotal{
@@ -145,10 +147,6 @@
 
   .datos_1 div, .datos_2 div{
     margin: 15px 0; 
-  }
-
-  .sectionTotal_1 h1{
-    font-size: 14px;
   }
 
   .nota{

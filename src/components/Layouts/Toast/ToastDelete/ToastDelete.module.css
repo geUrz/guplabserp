@@ -21,7 +21,7 @@
 }
 
 .toast svg, .toast path{
-  font-size: 64px;
-  color: var(--clrError);
+  font-size: 54px;
+  color: var(--bgBtnN);
 }
 

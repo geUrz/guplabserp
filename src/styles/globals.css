@@ -34,3 +34,8 @@ h1,h2,h3,h4{
 li.slick-active{
   opacity: .3;
 }
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+

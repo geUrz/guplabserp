@@ -1,0 +1,6 @@
+export * from './OrdenservList'
+export * from './OrdenservDetalles'
+export * from './OrdenservForm'
+export * from './OrdenservEditForm'
+export * from './OrdenservListSearch'
+export * from './SearchOrdenserv'

@@ -23,11 +23,25 @@ export async function handler(req, res) {
             try {
                 // Obtener recibo y sus conceptos
                 const [rows] = await connection.query(`
-                    SELECT r.id, r.folio, r.folioref, r.usuario_id, r.cliente_id, 
-                           r.cliente_nombre, r.cliente_contacto, r.negocio_id, 
-                           r.recibo, r.nota, r.discount, r.iva, r.iva_enabled, r.createdAt,
-                           c.nombre AS cliente_nombre, c.contacto AS cliente_contacto,
-                           n.negocio AS negocio_nombre
+                    SELECT 
+                        r.id, 
+                        r.folio, 
+                        r.folioref, 
+                        r.usuario_id, 
+                        r.usuario_nombre, 
+                        r.cliente_id, 
+                        r.cliente_nombre, 
+                        r.cliente_contacto,
+                        c.nombre AS cliente_nombre, 
+                        c.contacto AS cliente_contacto, 
+                        r.negocio_id, 
+                        r.recibo, 
+                        r.nota, 
+                        r.discount, 
+                        r.iva, 
+                        r.iva_enabled, 
+                        n.negocio AS negocio_nombre,
+                        r.createdAt
                     FROM recibos r
                     LEFT JOIN clientes c ON r.cliente_id = c.id
                     LEFT JOIN negocios n ON r.negocio_id = n.id
@@ -59,6 +73,7 @@ export async function handler(req, res) {
                     "LOWER(r.folio) LIKE ?",
                     "LOWER(r.folioref) LIKE ?",
                     "LOWER(r.recibo) LIKE ?",
+                    "LOWER(r.usuario_nombre) LIKE ?",
                     "LOWER(c.nombre) LIKE ?",
                     "LOWER(c.contacto) LIKE ?",
                     "LOWER(r.cliente_nombre) LIKE ?",
@@ -82,19 +97,20 @@ export async function handler(req, res) {
                      r.folio, 
                      r.folioref, 
                      r.usuario_id, 
+                     r.usuario_nombre, 
                      r.cliente_id, 
                      r.cliente_nombre,
                      r.cliente_contacto,
+                     c.nombre AS cliente_nombre, 
+                    c.contacto AS cliente_contacto,
                      r.negocio_id,
                      r.recibo,
                      r.nota,
                      r.discount,
                      r.iva,
                      r.iva_enabled,
-                     r.createdAt,
-                     c.nombre AS cliente_nombre,
-                     c.contacto AS cliente_contacto,
-                     n.negocio AS negocio_nombre
+                     n.negocio AS negocio_nombre,
+                     r.createdAt
                     FROM recibos r
                     LEFT JOIN clientes c ON r.cliente_id = c.id
                     LEFT JOIN negocios n ON r.negocio_id = n.id
@@ -134,19 +150,20 @@ export async function handler(req, res) {
                   r.folio, 
                   r.folioref, 
                   r.usuario_id, 
+                  r.usuario_nombre, 
                   r.cliente_id, 
                   r.cliente_nombre,
                   r.cliente_contacto,
+                  c.nombre AS cliente_nombre, 
+                  c.contacto AS cliente_contacto,
                   r.negocio_id,
                   r.recibo,
                   r.nota,
                   r.discount,
                   r.iva,
                   r.iva_enabled,
-                  r.createdAt,
-                  c.nombre AS cliente_nombre,
-                  c.contacto AS cliente_contacto,
-                  n.negocio AS negocio_nombre
+                  n.negocio AS negocio_nombre,
+                  r.createdAt
                 FROM recibos r
                 LEFT JOIN clientes c ON r.cliente_id = c.id
                 LEFT JOIN negocios n ON r.negocio_id = n.id
@@ -181,19 +198,20 @@ export async function handler(req, res) {
                   r.folio, 
                   r.folioref, 
                   r.usuario_id, 
+                  r.usuario_nombre, 
                   r.cliente_id, 
                   r.cliente_nombre,
                   r.cliente_contacto,
+                  c.nombre AS cliente_nombre,
+                  c.contacto AS cliente_contacto,
                   r.negocio_id,
                   r.recibo,
                   r.nota,
                   r.discount,
                   r.iva,
                   r.iva_enabled,
-                  r.createdAt,
-                  c.nombre AS cliente_nombre,
-                  c.contacto AS cliente_contacto,
-                  n.negocio AS negocio_nombre
+                  n.negocio AS negocio_nombre,
+                  r.createdAt
                 FROM recibos r
                 LEFT JOIN clientes c ON r.cliente_id = c.id
                 LEFT JOIN negocios n ON r.negocio_id = n.id
@@ -217,12 +235,12 @@ export async function handler(req, res) {
 
     } else if (req.method === 'POST') {
 
-        const { usuario_id, folio, cliente_id, recibo, nota, folioref, iva, iva_enabled } = req.body;
+        const { usuario_id, usuario_nombre, folio, cliente_id, recibo, nota, folioref, iva, iva_enabled } = req.body;
 
         try {
             const [result] = await connection.query(
-                'INSERT INTO recibos (usuario_id, folio, cliente_id, recibo, nota, folioref, iva, iva_enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [usuario_id, folio, cliente_id, recibo, nota, folioref, iva, iva_enabled]
+                'INSERT INTO recibos (usuario_id, usuario_nombre, folio, cliente_id, recibo, nota, folioref, iva, iva_enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [usuario_id, usuario_nombre, folio, cliente_id, recibo, nota, folioref, iva, iva_enabled]
             )
             res.status(201).json({ id: result.insertId })
         } catch (error) {

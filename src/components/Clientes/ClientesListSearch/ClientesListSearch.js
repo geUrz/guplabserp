@@ -6,24 +6,28 @@ import { useEffect, useState } from 'react'
 import { getValueOrDefault } from '@/helpers'
 import { ClienteDetalles } from '../ClienteDetalles'
 import styles from './ClientesListSearch.module.css'
+import { useDispatch } from 'react-redux'
+import { setCliente } from '@/store/clientes/clienteSlice'
 
 export function ClientesListSearch(props) {
 
   const { isAdmin, isSuperUser, reload, onReload, clientes, onToastSuccess, onToastSuccessDel } = props
 
+  const dispatch = useDispatch()
+
   const [showDetalles, setShowDetalles] = useState(false)
   const [clientesSeleccionado, setClienteSeleccionado] = useState(null)
   const [showLoading, setShowLoading] = useState(true)
-
-  const onOpenDetalles = (cliente) => {
-    setClienteSeleccionado(cliente)
-    setShowDetalles(true)
-  }
-
-  const onCloseDetalles = () => {
-    setClienteSeleccionado(null)
-    setShowDetalles(false)
-  }
+  
+    const onOpenDetalles = (cliente) => {
+      dispatch(setCliente(cliente))
+      setShowDetalles(true)
+    }
+  
+    const onCloseDetalles = () => {
+      dispatch(setCliente(null))
+      setShowDetalles(false)
+    }
 
   useEffect(() => {
     const timer = setTimeout(() => {
